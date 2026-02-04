@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Department Portal</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        .icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .icon img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+        }
+        .title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        /* Individual icon background colors (matching your image) */
+        .card:nth-child(1) .icon { background: #4CAF50; }
+        .card:nth-child(2) .icon { background: #E91E63; }
+        .card:nth-child(3) .icon { background: #FF9800; }
+        .card:nth-child(4) .icon { background: #FF5722; }
+        .card:nth-child(5) .icon { background: #FF9800; }
+        .card:nth-child(6) .icon { background: #009688; }
+        .card:nth-child(7) .icon { background: #2196F3; }
+        .card:nth-child(8) .icon { background: #3F51B5; }
+        .card:nth-child(9) .icon { background: #00BCD4; }
+        .card:nth-child(10) .icon { background: #2196F3; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>QA Department Portal</h1>
+
+    <div class="grid">
+        <!-- Row 1 -->
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/share-2.png" alt="Intranet">
+            </div>
+            <div class="title">Intranet (File Sharing)</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/document.png" alt="Dokumen Mutu">
+            </div>
+            <div class="title">Dokumen Mutu</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/checklist.png" alt="Masterlist">
+            </div>
+            <div class="title">Masterlist</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/version-control.png" alt="Change Control">
+            </div>
+            <div class="title">Change Control</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/document.png" alt="Doc. Change Control">
+            </div>
+            <div class="title">Doc. Change Control</div>
+        </a>
+
+        <!-- Row 2 -->
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/lab-items.png" alt="QC Pedoman Baku">
+            </div>
+            <div class="title">QC Pedoman Baku</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/analytics.png" alt="Penunjang Analisa">
+            </div>
+            <div class="title">Penunjang Analisa</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/complaint.png" alt="Material Complaint">
+            </div>
+            <div class="title">Material Complaint</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/test-tube.png" alt="QC Stability System">
+            </div>
+            <div class="title">QC Stability System</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="icon">
+                <img src="https://img.icons8.com/color/100/conference.png" alt="HRD - OrangE">
+            </div>
+            <div class="title">HRD - OrangE</div>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
