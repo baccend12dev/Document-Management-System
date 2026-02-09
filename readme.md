@@ -105,23 +105,23 @@ Dashboard menampilkan ringkasan data seperti:
 
 ### 2. Dashboard
 
-![Dashboard](img\masterListDoc.png)
+![Dashboard](img/masterListDoc.png)
 
 ### 3. Upload Dokumen
 
-![Upload Document](img\registerDocs.png)
+![Upload Document](img/registerDocs.png)
 
 ### 4. Register Tools / Product
 
-![Approval Document](img\registerTools.png)
+![Approval Document](img/registerTools.png)
 
 ### 5. Report with fileter
 
-![Audit Trail](img\reportDoc.png)
+![Audit Trail](img/reportDoc.png)
 
 ### 6. Audit Trail
 
-![Audit Trail](img\auditTrail.png)
+![Audit Trail](img/auditTrail.png)
 
 ---
 
