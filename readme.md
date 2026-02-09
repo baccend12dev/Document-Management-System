@@ -186,7 +186,7 @@ php artisan serve
 
 ## Author
 
-**KKV Management System Team**
+**Document Management System Team**
 
 ---
 
