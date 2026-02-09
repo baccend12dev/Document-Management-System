@@ -101,7 +101,7 @@ Dashboard menampilkan ringkasan data seperti:
 
 ### 1. Login Page
 
-![Login Page](img\login.png)
+![Login Page](img/login.png)
 
 ### 2. Dashboard
 
