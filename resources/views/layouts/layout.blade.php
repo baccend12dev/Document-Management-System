@@ -211,6 +211,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a href="/utility-masterlist" class="nav-link {{ request()->is('utility-masterlist*') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Utility Masterlist</p>
+                            </a>
+                        </li>
                         @endif
                         <!-- Document Registration -->
                         @if(auth()->user()->role == 'technician' || auth()->user()->role == 'admin' || auth()->user()->role == 'supervisor')
