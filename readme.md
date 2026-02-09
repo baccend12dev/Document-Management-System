@@ -192,4 +192,4 @@ php artisan serve
 
 ## Lisensi
 
-Project ini digunakan untuk kebutuhan internal perusah
+Project ini digunakan untuk kebutuhan internal perusahaan
