@@ -79,6 +79,11 @@ Route::get('/api/products-by-active-substance', 'ToolsRegistrationController@get
     // Delete
     Route::delete('/tools-registration/delete/{id}', 'ToolsRegistrationController@destroy')->name('tools.destroy');
 
+    //utility masterlist
+    Route::get('/utility-masterlist', 'UtilityMasterlistController@index')->name('utility.masterlist.index');
+    Route::post('/utility-masterlist/store', 'UtilityMasterlistController@store')->name('utility.masterlist.store');
+    Route::put('/utility-masterlist/{id}', 'UtilityMasterlistController@update')->name('utility.masterlist.update');
+    Route::delete('/utility-masterlist/{id}', 'UtilityMasterlistController@destroy')->name('utility.masterlist.destroy');
 
 });
 
