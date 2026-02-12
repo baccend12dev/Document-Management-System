@@ -85,6 +85,7 @@ Route::get('/api/products-by-active-substance', 'ToolsRegistrationController@get
     Route::put('/utility-masterlist/{id}', 'UtilityMasterlistController@update')->name('utility.masterlist.update');
     Route::delete('/utility-masterlist/{id}', 'UtilityMasterlistController@destroy')->name('utility.masterlist.destroy');
 
+    Route::get('/utility/document/{id}', 'UtilityMasterlistController@showDocument')->name('utility.document');
 });
 
 

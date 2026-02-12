@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\ModelUtilityMasterlist;
+use App\ModelUtilityDropdown;
+use App\DocumentEquipment;
 use Illuminate\Http\Request;
 
 class UtilityMasterlistController extends Controller
@@ -13,14 +15,15 @@ class UtilityMasterlistController extends Controller
         $data = ModelUtilityMasterlist::orderBy('id', 'desc')->paginate(10);
 
         // Hardcoded dropdown options
-        $subjects = ['IQ', 'OQ', 'PQ', 'DQ', 'FAT', 'SAT'];
-        $systems = ['HVAC', 'Water System', 'Compressed Air', 'Steam', 'Nitrogen', 'Electrical', 'Fire Protection'];
-        $models = ['Model A', 'Model B', 'Model C', 'Model D', 'Model E'];
-        $buildings = ['Building 1', 'Building 2', 'Building 3', 'Building 4', 'Building 5'];
-        $locations = ['Lantai 1', 'Lantai 2', 'Lantai 3', 'Lantai 4', 'Basement'];
-        $serviceareas = ['Production', 'Warehouse', 'Laboratory', 'Office', 'Utility Room'];
-        $roomNumbers = ['R-101', 'R-102', 'R-103', 'R-201', 'R-202', 'R-203', 'R-301', 'R-302'];
-        $roomNames = ['Mixing Room', 'Filling Room', 'Packaging Room', 'Storage Room', 'Clean Room', 'Weighing Room'];
+        $subjects = ModelUtilityDropdown::pluck('subject')->toArray();
+        $systems = ModelUtilityDropdown::pluck('system')->toArray();
+        $models = ModelUtilityDropdown::pluck('model')->toArray();
+        $buildings = ModelUtilityDropdown::pluck('building')->toArray();
+        $locations = ModelUtilityDropdown::pluck('location')->toArray();
+        $serviceareas = ModelUtilityDropdown::pluck('servicearea')->toArray();
+
+        $roomNumbers = \DB::table('QA_KKVUtilityListRoom')->pluck('roomNumber')->toArray();
+        $roomNames = \DB::table('QA_KKVUtilityListRoom')->pluck('roomName')->toArray();
 
         return view('utility.utilityMasterlist', compact(
             'data',
@@ -135,6 +138,18 @@ class UtilityMasterlistController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    //detail utility to add document
+    public function showDocument($id)
+    {
+        try {
+            $utilitys = ModelUtilityMasterlist::with('utilityDocuments')->findOrFail($id);
+            // dd($utilitys);
+            return view('utility.utilityDocument', compact('utilitys'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 

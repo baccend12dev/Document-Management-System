@@ -161,6 +161,7 @@
                 <table class="table table-hover table-striped table-bordered text-nowrap">
                     <thead class="thead-dark">
                         <tr>
+                            <th style="width: 10px"></th>
                             <th style="width: 40px">#</th>
                             <th>Subject</th>
                             <th>System</th>
@@ -168,14 +169,17 @@
                             <th>Building</th>
                             <th>Location</th>
                             <th>Service Area</th>
-                            <th>Room Number</th>
-                            <th>Room Name</th>
                             <th style="width: 120px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($data as $index => $row)
                         <tr>
+                            <td>
+                                <button type="button" class="btn btn-xs btn-success btn-expand" title="Lihat Detail Room">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </td>
                             <td>{{ $data->firstItem() + $index }}</td>
                             <td>
                                 @foreach(explode(',', $row->subject ? $row->subject : '') as $val)
@@ -208,16 +212,9 @@
                                 @endforeach
                             </td>
                             <td>
-                                @foreach(explode(',', $row->roomNumber ? $row->roomNumber : '') as $val)
-                                    @if($val)<span class="badge-multi">{{ $val }}</span>@endif
-                                @endforeach
-                            </td>
-                            <td>
-                                @foreach(explode(',', $row->roomName ? $row->roomName : '') as $val)
-                                    @if($val)<span class="badge-multi">{{ $val }}</span>@endif
-                                @endforeach
-                            </td>
-                            <td>
+                                <a href="{{ route('utility.document', $row->id) }}" class="btn btn-sm btn-info" title="Lihat Dokumen">
+                                    <i class="fas fa-file-alt"></i>
+                                </a>
                                 <button class="btn btn-sm btn-warning btn-edit"
                                     data-id="{{ $row->id }}"
                                     data-subject="{{ $row->subject }}"
@@ -228,21 +225,47 @@
                                     data-servicearea="{{ $row->servicearea }}"
                                     data-roomnumber="{{ $row->roomNumber }}"
                                     data-roomname="{{ $row->roomName }}"
-                                    data-toggle="modal" data-target="#editModal">
+                                    data-toggle="modal" data-target="#editModal" title="Edit Data">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <form action="{{ route('utility.masterlist.destroy', $row->id) }}" method="POST" style="display:inline;" class="form-delete">
                                     {{csrf_field()}}
                                     {{method_field('DELETE')}}
-                                    <button type="submit" class="btn btn-sm btn-danger btn-delete">
+                                    <button type="submit" class="btn btn-sm btn-danger btn-delete" title="Hapus Data">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                             </td>
                         </tr>
+                        <tr class="expand-row d-none bg-light">
+                            <td colspan="9">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong class="d-block mb-1 text-info"><i class="fas fa-door-open mr-1"></i> Room Number:</strong>
+                                        <div style="max-height: 150px; overflow-y: auto;">
+                                            @forelse(explode(',', $row->roomNumber ? $row->roomNumber : '') as $val)
+                                                @if($val)<span class="badge badge-info mr-1 mb-1" style="font-size: 90%;">{{ $val }}</span>@endif
+                                            @empty
+                                                <span class="text-muted">-</span>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong class="d-block mb-1 text-secondary"><i class="fas fa-tag mr-1"></i> Room Name:</strong>
+                                        <div style="max-height: 150px; overflow-y: auto;">
+                                            @forelse(explode(',', $row->roomName ? $row->roomName : '') as $val)
+                                                @if($val)<span class="badge badge-secondary mr-1 mb-1" style="font-size: 90%;">{{ $val }}</span>@endif
+                                            @empty
+                                                <span class="text-muted">-</span>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="text-center text-muted py-4">
+                            <td colspan="9" class="text-center text-muted py-4">
                                 <i class="fas fa-inbox fa-2x mb-2 d-block"></i> Belum ada data.
                             </td>
                         </tr>
@@ -349,9 +372,19 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Init Select2 for main form with tags enabled (allow custom input)
+    $('.select2').select2({
+        tags: true,
+        width: '100%',
+        placeholder: function() {
+            return $(this).data('placeholder');
+        }
+    });
+
     // Init Select2 for edit modal (need to re-init after modal shown)
     $('#editModal').on('shown.bs.modal', function () {
         $('.select2-edit').select2({
+            tags: true,
             dropdownParent: $('#editModal'),
             width: '100%'
         });
@@ -408,6 +441,23 @@ $(document).ready(function() {
     // Spinner on submit
     $('#formUtilityMasterlist').on('submit', function() {
         $('#btnSave').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...');
+    });
+
+    // Expand Row Logic
+    $('.btn-expand').on('click', function() {
+        var tr = $(this).closest('tr');
+        var nextTr = tr.next('.expand-row');
+        var icon = $(this).find('i');
+
+        if(nextTr.hasClass('d-none')) {
+            nextTr.removeClass('d-none');
+            $(this).removeClass('btn-success').addClass('btn-danger');
+            icon.removeClass('fa-plus').addClass('fa-minus');
+        } else {
+            nextTr.addClass('d-none');
+            $(this).removeClass('btn-danger').addClass('btn-success');
+            icon.removeClass('fa-minus').addClass('fa-plus');
+        }
     });
 });
 </script>

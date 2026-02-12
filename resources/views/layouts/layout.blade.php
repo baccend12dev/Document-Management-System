@@ -174,12 +174,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/tools-registration/utility" class="nav-link {{ request()->is('tools-registration/utility*') ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Utility Qualification</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a href="/tools-registration/room" class="nav-link {{ request()->is('tools-registration/room*') ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Room Qualification</p>

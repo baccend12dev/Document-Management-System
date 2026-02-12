@@ -54,13 +54,13 @@
         }
 
         .section {
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 16px;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding-bottom: 10px;
             border-bottom: 2px solid #e0e0e0;
         }
@@ -69,9 +69,9 @@
         .details-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 10px;
             background-color: #f8f9fa;
-            padding: 20px;
+            padding: 10px;
             border-radius: 6px;
         }
 
@@ -310,45 +310,58 @@
     </style>
 
 <body>
-    @php
-    $totalDocs = count($document->documents);
-    $totalTypes = count($documentTypes);
-    @endphp
-
     <div class="container">
         <div class="header">
             <div>
-                <h1>{{$document->equipment_id}} {{$document->product_code}} | {{$document->equipment_name}}</h1>
-                <div class="header-subtitle">{{$document->sub_menu}}</div>
+                <h1>{{$utilitys->subject}} | {{$utilitys->system}}</h1>
+                <div class="header-subtitle">Utility</div>
             </div>
             <button class="close-btn" onclick="window.close()">×</button>
         </div>
         <div class="content">
             <!-- Tool Details Section -->
-            <div class="section">
-                <h2 class="section-title">Tool Details</h2>
+            <div class="section" style="font-size: 12px;" id="utilityDetails">
+                <h2 class="section-title">Utility Details</h2>
                 <div class="details-grid">
                     <div class="detail-item">
-                        <span class="detail-label">ID</span>
-                        <span class="detail-value"> {{$document->equipment_id}} {{$document->product_code}}</span>
+                        <span class="detail-label">Subject</span>
+                        <span class="detail-value">{{$utilitys->subject}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Name</span>
-                        <span class="detail-value">{{$document->equipment_name}}</span>
+                        <span class="detail-label">System</span>
+                        <span class="detail-value">{{$utilitys->system}}</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Category</span>
-                        <span class="detail-value">{{$document->sub_menu}}</span>
+                        <span class="detail-label">Model</span>
+                        <span class="detail-value">{{$utilitys->model}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Location</span>
+                        <span class="detail-value">{{$utilitys->location}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Service Area</span>
+                        <span class="detail-value">{{$utilitys->servicearea}}</span>
                     </div>
 
-                    <div class="detail-item">
-                        <span class="detail-label">Last Updated</span>
-                        <span class="detail-value">{{$document->updated_at}}</span>
+                    <div class="detail-item" style="{{ count(explode(',', $utilitys->roomNumber)) > 3 ? 'grid-column: span 2;' : '' }}">
+                        <span class="detail-label">Room Number</span>
+                        <div class="detail-value">
+                            @php $rooms = array_filter(explode(',', $utilitys->roomNumber)); @endphp
+                            @foreach ($rooms as $room)
+                                <span class="badge">{{ $room }}</span>
+                            @endforeach
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Total Documents</span>
-                        <span class="detail-value">{{ $totalDocs }}/{{ $totalTypes }} Documents</span>
+                    <div class="detail-item" style="{{ count(explode(',', $utilitys->roomName)) > 3 ? 'grid-column: span 2;' : '' }}">
+                        <div class="detail-value">
+                            @php $rooms = array_filter(explode(',', $utilitys->roomName)); @endphp
+                            @foreach ($rooms as $room)
+                                <span class="badge">{{ $room }}</span>
+                            @endforeach
+                        </div>
                     </div>
+
                 </div>
             </div>
             <!-- Document List Section -->
@@ -391,7 +404,7 @@
                             </tr>
                         </thead>
                         <tbody id="documentTableBody">
-                            @foreach($document->documents as $doc)
+                            @foreach($utilitys->utilityDocuments as $doc)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{$doc->doc_number}}</td>
@@ -450,8 +463,8 @@
                 </div>
                 <div class="collapsible-content mt-3" id="formContent">
                     <form id="documentForm">
-                        <input type="hidden" name="tools_id" value="{{ $document->id }}">
-                        <input type="hidden" name="sub_menu" value="{{ $document->sub_menu }}">
+                        <input type="hidden" name="tools_id" value="{{ $utilitys->id }}">
+                        <input type="hidden" name="sub_menu" value="utility">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="row">
@@ -739,7 +752,7 @@
 
 @section('scripts')
 <script>
-            let subMenu = "{{ $document->sub_menu }}";
+            let subMenu = "utility";
             $(document).ready(function() {
                 loadDocumentTypes();
                 loadSubjectOptions();
@@ -788,7 +801,7 @@
                 });
             });
             // Ambil daftar document type yang sudah ada
-            const usedDocumentTypes = {!! json_encode($document->documents->pluck('document_type')->toArray()) !!};
+            const usedDocumentTypes = {!! json_encode($utilitys->utilityDocuments->pluck('document_type')->toArray()) !!};
             // console.log('Used Document Types:', usedDocumentTypes);
 
             function loadDocumentTypes() {
@@ -830,9 +843,9 @@
                 const selectedDocType = $('#documentType option:selected');
 
                 // Ambil building & department dari PHP (Blade)
-                const building = "{{ strtoupper(substr($document->building, 0, 3)) }}";
+                const building = "{{ strtoupper(substr($utilitys->building, 0, 3)) }}";
                 const dept =
-                    "{{ strtoupper(substr($document->department, 0, 3)) }}{{ strtoupper(substr($document->dosageCode, 0, 3)) }}";
+                    "{{ strtoupper(substr($utilitys->department, 0, 3)) }}{{ strtoupper(substr($utilitys->dosageCode, 0, 3)) }}";
 
                 // Jika belum pilih document type
                 if (!selectedDocType.val()) {
@@ -851,7 +864,8 @@
                 documentNumberElement.prop('readonly', true);
 
                 // Bentuk format nomor dokumen
-                const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
+                // const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
+                const newDocumentNumber = `${noDoc}/${serialNumber}`;
 
                 documentNumberElement.val(newDocumentNumber);
             }
