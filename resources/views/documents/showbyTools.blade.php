@@ -407,7 +407,7 @@
             </form>
         </div>
 
- @if(isset($tools))
+ @if(isset($tools) && $tools->count() > 0)
     <div class="results-container">
         <div class="results-header">
             <h3 class="results-title"> <i class="fas fa-file-alt"></i> Document Report</h3>

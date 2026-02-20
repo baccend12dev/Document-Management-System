@@ -445,7 +445,7 @@
                         </thead>
                         <tbody>
                             @forelse($documents as $doc)
-                            <tr class="{{ !$doc->equipment ? 'table-danger' : '' }}">
+                            <tr class="{{ !$doc->equipment && $doc->sub_menu != 'utility' ? 'table-danger' : '' }}">
                                 <td class="font-weight-bold text-primary" style="white-space: nowrap;">
                                     {{ $doc->doc_number }}
                                 </td>

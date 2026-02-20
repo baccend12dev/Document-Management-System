@@ -708,13 +708,11 @@ class DocumentController extends Controller
     //report by tools
     public function reportBytools( Request $request)
     {
-        // dd($request->all());
         //search by tools
         $identityNumber = $request->search;
         $tools = EquipmentQualification::with('documents') 
                 ->where('equipment_id', $identityNumber)
                 ->get();
-        // dd($tools);
         return view('documents.showbyTools', compact('tools'));
     }
     //report by Document
