@@ -3,20 +3,20 @@
 @section('content')
 
     <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
 
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
 
         .header {
             display: flex;
@@ -309,704 +309,701 @@
         }
     </style>
 
-<body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1>{{$utilitys->subject}} | {{$utilitys->system}}</h1>
-                <div class="header-subtitle">Utility</div>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div>
+                    <h1>{{$utilitys->subject}} | {{$utilitys->system}}</h1>
+                    <div class="header-subtitle">Utility</div>
+                </div>
+                <button class="close-btn" onclick="window.close()">×</button>
             </div>
-            <button class="close-btn" onclick="window.close()">×</button>
-        </div>
-        <div class="content">
-            <!-- Tool Details Section -->
-            <div class="section" style="font-size: 12px;" id="utilityDetails">
-                <h2 class="section-title">Utility Details</h2>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">Subject</span>
-                        <span class="detail-value">{{$utilitys->subject}}</span>
+            <div class="content">
+                <!-- Tool Details Section -->
+                <div class="section" style="font-size: 12px;" id="utilityDetails">
+                    <h2 class="section-title">Utility Details</h2>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Subject</span>
+                            <span class="detail-value">{{$utilitys->subject}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">System</span>
+                            <span class="detail-value">{{$utilitys->system}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Model</span>
+                            <span class="detail-value">{{$utilitys->model}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value">{{$utilitys->location}}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Service Area</span>
+                            <span class="detail-value">{{$utilitys->servicearea}}</span>
+                        </div>
+
+                        <div class="detail-item"
+                            style="{{ count(explode(',', $utilitys->roomNumber)) > 3 ? 'grid-column: span 2;' : '' }}">
+                            <span class="detail-label">Room Number</span>
+                            <div class="detail-value">
+                                @php $rooms = array_filter(explode(',', $utilitys->roomNumber)); @endphp
+                                @foreach ($rooms as $room)
+                                    <span class="badge">{{ $room }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div class="detail-item"
+                            style="{{ count(explode(',', $utilitys->roomName)) > 3 ? 'grid-column: span 2;' : '' }}">
+                            <div class="detail-value">
+                                @php $rooms = array_filter(explode(',', $utilitys->roomName)); @endphp
+                                @foreach ($rooms as $room)
+                                    <span class="badge">{{ $room }}</span>
+                                @endforeach
+                            </div>
+                        </div>
+
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">System</span>
-                        <span class="detail-value">{{$utilitys->system}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Model</span>
-                        <span class="detail-value">{{$utilitys->model}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Location</span>
-                        <span class="detail-value">{{$utilitys->location}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Service Area</span>
-                        <span class="detail-value">{{$utilitys->servicearea}}</span>
+                </div>
+                <!-- Document List Section -->
+                <div class="section">
+                    <h2 class="section-title">Associated Documents</h2>
+                    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+                        <button type="button" class="btn btn-primary" id="openFormBtn" data-target="#formContent"
+                            onclick="openFormContent(this)">
+                            ➕ Add New Document
+                        </button>
                     </div>
 
-                    <div class="detail-item" style="{{ count(explode(',', $utilitys->roomNumber)) > 3 ? 'grid-column: span 2;' : '' }}">
-                        <span class="detail-label">Room Number</span>
-                        <div class="detail-value">
-                            @php $rooms = array_filter(explode(',', $utilitys->roomNumber)); @endphp
-                            @foreach ($rooms as $room)
-                                <span class="badge">{{ $room }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="detail-item" style="{{ count(explode(',', $utilitys->roomName)) > 3 ? 'grid-column: span 2;' : '' }}">
-                        <div class="detail-value">
-                            @php $rooms = array_filter(explode(',', $utilitys->roomName)); @endphp
-                            @foreach ($rooms as $room)
-                                <span class="badge">{{ $room }}</span>
-                            @endforeach
-                        </div>
-                    </div>
+                    <script>
+                        function openFormContent(btn) {
+                            const target = btn.getAttribute('data-target');
+                            if (!target) return;
+                            const el = document.querySelector(target);
+                            if (!el) return;
+                            el.classList.remove('collapsed');
+                            const icon = document.getElementById('toggleIcon');
+                            if (icon) icon.classList.remove('collapsed');
+                            el.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'start'
+                            });
+                        }
+                    </script>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">No</th>
+                                    <th>Document Number</th>
+                                    <th>Document Type</th>
+                                    <th style="width: 100px;">Revision</th>
+                                    <th style="width: 100px;">Requalification</th>
+                                    <th style="width: 120px;">Last Updated</th>
+                                    <th>Next Review</th>
+                                    <th style="width: 200px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="documentTableBody">
+                                @foreach($utilitys->utilityDocuments as $doc)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{$doc->doc_number}}</td>
+                                        <td>{{$doc->document_type}}</td>
+                                        <td> {{$doc->revision_number}} </td>
+                                        <td> {{$doc->requalification}} </td>
+                                        <td>{{ $doc->updated_at->format('d/m/Y') }}</td>
+                                        <td>{{$doc->next_review}}</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn-icon primary view-pdf" data-document-id="{{ $doc->id }}"
+                                                    data-document-number="{{ $doc->doc_number }}">
+                                                    <i class="fas fa-eye"></i>
+                                                    <span>View</span>
+                                                </button>
+                                                <a href="{{ route('documents.download', $doc->id) }}?t={{ time() }}"
+                                                    class="btn-icon" title="Download">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                <button class="btn-icon edit-btn" title="Edit" data-id="{{ $doc->id }}"
+                                                    data-doc-number="{{ $doc->doc_number }}"
+                                                    data-rev="{{ $doc->revision_number }}"
+                                                    data-approved="{{ $doc->approved_date }}"
+                                                    data-req="{{ $doc->requalification }}" data-building="{{ $doc->subject }}"
+                                                    data-nextreview="{{ $doc->next_review }}" data-remark="{{ $doc->remarks }}"
+                                                    data-frequency="{{ $doc->review_frequency }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <a href="{{ route('documents.history', $doc->id) }}" class="btn btn-sm btn-info"
+                                                    title="View History">
+                                                    <i class=" fas fa-history"></i>
+                                                </a>
 
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            <!-- Document List Section -->
-            <div class="section">
-                <h2 class="section-title">Associated Documents</h2>
-                <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
-                    <button type="button" class="btn btn-primary" id="openFormBtn" data-target="#formContent"
-                        onclick="openFormContent(this)">
-                        ➕ Add New Document
+        </div>
+
+        <!-- Add New Document Section -->
+        <div class="container">
+            <div class="content">
+                <div class="section">
+                    <div class="d-flex justify-content-between align-items-center cursor-pointer"
+                        onclick="toggleCollapse()">
+                        <h2 class="h4 mb-0">Add New Document</h2>
+                        <span class="toggle-icon" id="toggleIcon">▼</span>
+                    </div>
+                    <div class="collapsible-content mt-3" id="formContent">
+                        <form id="documentForm">
+                            <input type="hidden" name="tools_id" value="{{ $utilitys->id }}">
+                            <input type="hidden" name="sub_menu" value="utility">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label class="font-weight-bold">Document Type <span
+                                                    class="text-danger">*</span></label>
+                                            <select id="documentType" name="document_type" class="form-control" required>
+                                                <option value="">Select Type</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="font-weight-bold">Serial Number <span
+                                                    class="text-danger">*</span></label>
+                                            <select id="serial_number" name="serial_number" class="form-control" required>
+                                                <option value="">Select Serial</option>
+                                                @for ($i = 0; $i <= 100; $i++)
+                                                    <option value="{{ sprintf('%03d', $i) }}">
+                                                        {{ sprintf('%03d', $i) }}
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="font-weight-bold">Building</label>
+                                    <select class="form-control" name="building" id="building" required>
+                                        <option value="">Select Building</option>
+                                        <option value="ALL">All Buildings</option>
+                                        <option value="NBL">NBL</option>
+                                        <option value="CPL">CPL</option>
+                                        <option value="QC">QC</option>
+                                        <option value="RD">RD</option>
+                                        <option value="LG">LG</option>
+                                        <option value="QCR">QCR</option>
+                                        <option value="NCL">NCL</option>
+                                        <option value="NBQ">NBQ</option>
+                                        <option value="CRD">CRD</option>
+                                        <option value="NCQ">NCQ</option>
+                                        <option value="NQL">NQL</option>
+                                        <option value="NCG">NCG</option>
+                                        <option value="NCR">NCR</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="font-weight-bold">Departments</label>
+                                    <select class="form-control" name="department" id="department" required>
+                                        <option value="">Select Department</option>
+                                        <option value="ALL">All Departments</option>
+                                        <option value="TM">TM (Technical and Maintenance)</option>
+                                        <option value="PR">PR (Production)</option>
+                                        <option value="LG">LG (Logistic)</option>
+                                        <option value="RD">RD (Research and Development)</option>
+                                        <option value="QS">QS (Quality System)</option>
+                                        <option value="QA">QA (Quality Assurance)</option>
+                                        <option value="QC">QC (Quality Control)</option>
+                                        <option value="IT">IT (Information Technology)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label class="font-weight-bold">Document Number</label>
+                                    <input type="text" class="form-control font-weight-bold document-number-display"
+                                        id="documentNumber" name="document_number" readonly value="DOC-001-003">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Revision Number</label>
+                                    <select class="form-control" name="revision_number" id="revisionNumber" required>
+                                        <option value="">Select Revision</option>
+                                        <option value="00" selected>00</option>
+                                        @for ($i = 1; $i <= 100; $i++)
+                                            <option value="{{ sprintf('%02d', $i) }}">
+                                                {{ sprintf('%02d', $i) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Requalification</label>
+                                    <select class="form-control" name="requalification" id="requalification" required>
+                                        <option value="">Select Requalification</option>
+                                        <option value="00" selected>00</option>
+                                        @for ($i = 1; $i <= 100; $i++)
+                                            <option value="{{ sprintf('%02d', $i) }}">
+                                                {{ sprintf('%02d', $i) }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Model & Type</label>
+                                    <input type="text" id="modelType" name="modelType" class="form-control"
+                                        placeholder="Enter Model & Type">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Approve Date</label>
+                                    <input type="date" id="approveDate" name="approvedate" class="form-control">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Frequency Review</label>
+                                    <select id="frequencyReview" name="review_frequency" class="form-control">
+                                        <option value="">Select Frequency</option>
+                                        <option value="6">6 Months</option>
+                                        <option value="12">1 Year</option>
+                                        <option value="24">2 Years</option>
+                                        <option value="36">3 Years</option>
+                                        <option value="48">4 Years</option>
+                                        <option value="60">5 Years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Next Review</label>
+                                    <input type="date" id="nextReview" name="nextreview" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="font-weight-bold">Upload Document <span
+                                            class="text-danger">*</span></label>
+                                    <input type="file" id="fileInput" name="file" class="form-control"
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="font-weight-bold">Remarks</label>
+                                    <input type="text" id="remarks" name="remarks" class="form-control"
+                                        placeholder="Enter Remarks">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                                <button type="submit" class="btn btn-primary" id="saveBtn">💾 Save
+                                    Document</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal PDF Viewer -->
+        <div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pdfModalLabel">View Document</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="pdfFrame" width="100%" height="600px"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit mr-2"></i>Edit Document - <span id="modalDocNumber"
+                            class="font-weight-bold"></span>
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
 
-                <script>
-                function openFormContent(btn) {
-                    const target = btn.getAttribute('data-target');
-                    if (!target) return;
-                    const el = document.querySelector(target);
-                    if (!el) return;
-                    el.classList.remove('collapsed');
-                    const icon = document.getElementById('toggleIcon');
-                    if (icon) icon.classList.remove('collapsed');
-                    el.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-                </script>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">No</th>
-                                <th>Document Number</th>
-                                <th>Document Type</th>
-                                <th style="width: 100px;">Revision</th>
-                                <th style="width: 100px;">Requalification</th>
-                                <th style="width: 120px;">Last Updated</th>
-                                <th>Next Review</th>
-                                <th style="width: 200px;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="documentTableBody">
-                            @foreach($utilitys->utilityDocuments as $doc)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{$doc->doc_number}}</td>
-                                <td>{{$doc->document_type}}</td>
-                                <td> {{$doc->revision_number}} </td>
-                                <td> {{$doc->requalification}} </td>
-                                <td>{{ $doc->updated_at->format('d/m/Y') }}</td>
-                                <td>{{$doc->next_review}}</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-icon primary view-pdf" data-document-id="{{ $doc->id }}"
-                                                data-document-number="{{ $doc->doc_number }}">
-                                            <i class="fas fa-eye"></i>
-                                            <span>View</span>
-                                        </button>
-                                        <a href="{{ route('documents.download', $doc->id) }}?t={{ time() }}"
-                                        class="btn-icon" title="Download">
-                                        <i class="fas fa-download"></i>
-                                        </a>
-                                        <button class="btn-icon edit-btn" title="Edit"
-                                                data-id="{{ $doc->id }}"
-                                                data-doc-number="{{ $doc->doc_number }}"
-                                                data-rev="{{ $doc->revision_number }}"
-                                                data-approved="{{ $doc->approved_date }}"
-                                                data-req="{{ $doc->requalification }}"
-                                                data-building="{{ $doc->subject }}"
-                                                data-nextreview="{{ $doc->next_review }}"
-                                                data-remark="{{ $doc->remarks }}"
-                                                data-frequency="{{ $doc->review_frequency }}">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                         <a href="{{ route('documents.history', $doc->id) }}" 
-                                                 class="btn btn-sm btn-info" title="View History">
-                                            <i class=" fas fa-history"></i>
-                                        </a>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="editForm" action="{{ route('document.update') }}" method="POST" enctype="multipart/form-data">
+                        {{ csrf_field() }}
+                        <input type="hidden" name="id" id="editId">
 
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-            <!-- Add New Document Section -->
-             <div class="container">
-                <div class="content">
-            <div class="section">
-                <div class="d-flex justify-content-between align-items-center cursor-pointer"
-                    onclick="toggleCollapse()">
-                    <h2 class="h4 mb-0">Add New Document</h2>
-                    <span class="toggle-icon" id="toggleIcon">▼</span>
-                </div>
-                <div class="collapsible-content mt-3" id="formContent">
-                    <form id="documentForm">
-                        <input type="hidden" name="tools_id" value="{{ $utilitys->id }}">
-                        <input type="hidden" name="sub_menu" value="utility">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="row">
-                                    <div class="col-md-8 mb-3">
-                                        <label class="font-weight-bold">Document Type <span
-                                                class="text-danger">*</span></label>
-                                        <select id="documentType" name="document_type" class="form-control" required>
-                                            <option value="">Select Type</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="font-weight-bold">Serial Number <span
-                                                class="text-danger">*</span></label>
-                                        <select id="serial_number" name="serial_number" class="form-control" required>
-                                            <option value="">Select Serial</option>
-                                            @for ($i = 0; $i <= 100; $i++) <option value="{{ sprintf('%03d', $i) }}">
-                                                {{ sprintf('%03d', $i) }}</option>
-                                                @endfor
-                                        </select>
-                                    </div>
+                            <!-- Doc Number -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editDocNumber" class="font-weight-semibold">
+                                        Doc Number <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" name="doc_number" id="editDocNumber" class="form-control"
+                                        placeholder="Enter document number" required>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="font-weight-bold">Document Number</label>
-                                <input type="text" class="form-control font-weight-bold document-number-display"
-                                    id="documentNumber" name="document_number" readonly value="DOC-001-003">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Revision Number</label>
-                                <select class="form-control" name="revision_number" id="revisionNumber" required>
-                                    <option value="">Select Revision</option>
-                                    @for ($i = 0; $i <= 100; $i++) <option value="{{ sprintf('%02d', $i) }}">
-                                        {{ sprintf('%02d', $i) }}</option>
+
+                            <!-- Revision -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editRevision" class="font-weight-semibold">
+                                        Revision <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control" name="revision_number" id="editRevision">
+                                        <option value="">Select Revision</option>
+                                        @for ($i = 0; $i <= 100; $i++)
+                                            <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
                                         @endfor
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Requalification</label>
-                                <select class="form-control" name="requalification" id="requalification" required>
-                                    <option value="">Select Requalification</option>
-                                    @for ($i = 0; $i <= 100; $i++) <option value="{{ sprintf('%02d', $i) }}">
-                                        {{ sprintf('%02d', $i) }}</option>
-                                        @endfor
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Model & Type</label>
-                                <input type="text" id="modelType" name="modelType" class="form-control"
-                                    placeholder="Enter Model & Type">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Subject</label>
-                                <select class="form-control" name="subject" id="subject" required>
-                                    <option value="">Select Subject</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Approve Date</label>
-                                <input type="date" id="approveDate" name="approvedate" class="form-control">
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Frequency Review</label>
-                                <select id="frequencyReview" name="review_frequency" class="form-control">
-                                    <option value="">Select Frequency</option>
-                                    <option value="6">6 Months</option>
-                                    <option value="12">1 Year</option>
-                                    <option value="24">2 Years</option>
-                                    <option value="36">3 Years</option>
-                                    <option value="48">4 Years</option>
-                                    <option value="60">5 Years</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Next Review</label>
-                                <input type="date" id="nextReview" name="nextreview" class="form-control" readonly>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Upload Document <span
-                                        class="text-danger">*</span></label>
-                                <input type="file" id="fileInput" name="file" class="form-control"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx" required>
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <label class="font-weight-bold">Remarks</label>
-                                <input type="text" id="remarks" name="remarks" class="form-control"
-                                    placeholder="Enter Remarks">
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
-                            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
-                            <button type="submit" class="btn btn-primary" id="saveBtn">💾 Save
-                                Document</button>
+
+                        <div class="row">
+                            <!-- Requalification -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editRequalification" class="font-weight-semibold">
+                                        Requalification <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control" name="requalification" id="editRequalification">
+                                        <option value="">Select Requalification</option>
+                                        @for ($i = 0; $i <= 100; $i++)
+                                            <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Approve Date -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editApproveDate" class="font-weight-semibold">
+                                        Approve Date <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" name="approve_date" id="editApproveDate" class="form-control"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Next Review -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editNextReview" class="font-weight-semibold">
+                                        Next Review <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" name="next_review" id="editNextReview" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- frequency review -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editfrequencyReview" class="font-weight-semibold">
+                                        Frequency Review <span class="text-danger"></span>
+                                    </label>
+                                    <select name="frequency_review" id="editfrequencyReview" class="form-control">
+                                        <option value="">Select Frequency Review</option>
+                                        <option value="6">6 Months</option>
+                                        <option value="12">1 Year</option>
+                                        <option value="24">2 Years</option>
+                                        <option value="36">3 Years</option>
+                                        <option value="48">4 Years</option>
+                                        <option value="60">5 Years</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Upload Document -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editUpload" class="font-weight-semibold">
+                                        Upload Document
+                                    </label>
+                                    <div class="custom-file">
+                                        <input type="file" name="file" id="editUpload" class="custom-file-input"
+                                            accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                        <label class="custom-file-label" for="editUpload">Choose file...</label>
+                                    </div>
+                                    <small class="form-text text-muted">Leave empty if you don't want to change the
+                                        file</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Remark -->
+                        <div class="form-group">
+                            <label for="editRemark" class="font-weight-semibold">
+                                Remark
+                            </label>
+                            <textarea name="remark" id="editRemark" class="form-control" rows="3"
+                                placeholder="Enter additional notes or remarks..."></textarea>
+                            <small class="form-text text-muted">Optional: Add any additional information or notes</small>
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="modal-footer border-top pt-3 mt-3">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save mr-1"></i> Save Changes
+                            </button>
                         </div>
                     </form>
                 </div>
+
             </div>
-            </div>
-            </div>
-
-            <!-- Modal PDF Viewer -->
-            <div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="pdfModalLabel">View Document</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <iframe id="pdfFrame" width="100%" height="600px"></iframe>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-</body>
-
- <!-- Edit Modal -->
-<div id="editModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            
-            <!-- Modal Header -->
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-edit mr-2"></i>Edit Document - <span id="modalDocNumber" class="font-weight-bold"></span>
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <form id="editForm" action="{{ route('document.update') }}" method="POST" enctype="multipart/form-data">
-                   {{ csrf_field() }}
-                    <input type="hidden" name="id" id="editId">
-
-                    <div class="row">
-                        <!-- Doc Number -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editDocNumber" class="font-weight-semibold">
-                                    Doc Number <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" 
-                                       name="doc_number" 
-                                       id="editDocNumber" 
-                                       class="form-control" 
-                                       placeholder="Enter document number"
-                                       required>
-                            </div>
-                        </div>
-
-                        <!-- Revision -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editRevision" class="font-weight-semibold">
-                                    Revision <span class="text-danger">*</span>
-                                </label>
-                                <select class="form-control" name="revision_number" id="editRevision">
-                                    <option value="">Select Revision</option>
-                                    @for ($i = 0; $i <= 100; $i++)
-                                        <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Requalification -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editRequalification" class="font-weight-semibold">
-                                    Requalification <span class="text-danger">*</span>
-                                </label>
-                                <select class="form-control" name="requalification" id="editRequalification">
-                                    <option value="">Select Requalification</option>
-                                    @for ($i = 0; $i <= 100; $i++)
-                                        <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Approve Date -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editApproveDate" class="font-weight-semibold">
-                                    Approve Date <span class="text-danger">*</span>
-                                </label>
-                                <input type="date" 
-                                       name="approve_date" 
-                                       id="editApproveDate" 
-                                       class="form-control"
-                                       required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <!-- Next Review -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editNextReview" class="font-weight-semibold">
-                                    Next Review <span class="text-danger">*</span>
-                                </label>
-                                <input type="date" 
-                                       name="next_review" 
-                                       id="editNextReview" 
-                                       class="form-control">
-                            </div>
-                        </div>
-
-                        <!-- frequency review -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editfrequencyReview" class="font-weight-semibold">
-                                    Frequency Review <span class="text-danger"></span>
-                                </label>
-                                <select name="frequency_review" id="editfrequencyReview" class="form-control">
-                                   <option value="">Select Frequency Review</option>
-                                   <option value="6">6 Months</option>
-                                   <option value="12">1 Year</option>
-                                   <option value="24">2 Years</option>
-                                   <option value="36">3 Years</option>
-                                   <option value="48">4 Years</option>
-                                   <option value="60">5 Years</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Upload Document -->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="editUpload" class="font-weight-semibold">
-                                    Upload Document
-                                </label>
-                                <div class="custom-file">
-                                    <input type="file" 
-                                           name="file" 
-                                           id="editUpload" 
-                                           class="custom-file-input"
-                                           accept=".pdf,.doc,.docx,.xls,.xlsx">
-                                    <label class="custom-file-label" for="editUpload">Choose file...</label>
-                                </div>
-                                <small class="form-text text-muted">Leave empty if you don't want to change the file</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Remark -->
-                    <div class="form-group">
-                        <label for="editRemark" class="font-weight-semibold">
-                            Remark
-                        </label>
-                        <textarea name="remark" 
-                                  id="editRemark" 
-                                  class="form-control" 
-                                  rows="3" 
-                                  placeholder="Enter additional notes or remarks..."></textarea>
-                        <small class="form-text text-muted">Optional: Add any additional information or notes</small>
-                    </div>
-
-                    <!-- Modal Footer -->
-                    <div class="modal-footer border-top pt-3 mt-3">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                            <i class="fas fa-times mr-1"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save mr-1"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-
         </div>
     </div>
-</div>
 
 @endsection
 
 @section('scripts')
-<script>
-            let subMenu = "utility";
-            $(document).ready(function() {
-                loadDocumentTypes();
-                loadSubjectOptions();
-                toggleFrequencyReview();
+    <script>
+        let subMenu = "utility";
+        $(document).ready(function () {
+            loadDocumentTypes();
+            toggleFrequencyReview();
+        });
+        document.querySelectorAll('.view-pdf').forEach(button => {
+            button.addEventListener('click', function () {
+                const documentId = this.getAttribute('data-document-id');
+                const docNumber = this.getAttribute('data-document-number');
+                const pdfFrame = document.getElementById('pdfFrame');
+                const modalTitle = document.getElementById('pdfModalLabel');
+
+                // Ubah judul modal
+                modalTitle.textContent = 'View Document - ' + docNumber;
+
+                // Set iframe src (dengan cache-buster)
+                pdfFrame.src = "{{ url('documents/view') }}/" + documentId + "?t=" + new Date()
+                    .getTime();
+
+                // Tampilkan modal
+                const modal = new bootstrap.Modal(document.getElementById('pdfViewerModal'));
+                modal.show();
             });
+        });
+        // Ambil daftar document type yang sudah ada
+        const usedDocumentTypes = {!! json_encode($utilitys->utilityDocuments->pluck('document_type')->toArray()) !!};
+        // console.log('Used Document Types:', usedDocumentTypes);
 
+        function loadDocumentTypes() {
+            $('#documentType').html('<option value="">Select Type</option>');
 
-            //function load subject options based on sub menu
-            const menuMapping = {
-                'equipment': ['Equipment'],
-                'utility': ['PW', 'WFI', 'COAF', 'N2'],
-                'room': [' '],
-                'computer': ['System'],
-                'process-mediafill': ['Product'],
-                'cleaning': ['Equipment', 'Product'],
-                'analytical-method': ['Product'],
-                'default': ['General', 'Checklist', 'Report']
-            };
-            // Kosongkan dropdown
-            $('#subject').empty();
-
-            function loadSubjectOptions() {
-                const subjects = menuMapping[subMenu] || menuMapping['default'];
-                subjects.forEach(subject => {
-                    $('#subject').append(new Option(subject, subject));
-                });
-            }
-
-            document.querySelectorAll('.view-pdf').forEach(button => {
-                button.addEventListener('click', function() {
-                    const documentId = this.getAttribute('data-document-id');
-                    const docNumber = this.getAttribute('data-document-number');
-                    const pdfFrame = document.getElementById('pdfFrame');
-                    const modalTitle = document.getElementById('pdfModalLabel');
-
-                    // Ubah judul modal
-                    modalTitle.textContent = 'View Document - ' + docNumber;
-
-                    // Set iframe src (dengan cache-buster)
-                    pdfFrame.src = "{{ url('documents/view') }}/" + documentId + "?t=" + new Date()
-                        .getTime();
-
-                    // Tampilkan modal
-                    const modal = new bootstrap.Modal(document.getElementById('pdfViewerModal'));
-                    modal.show();
-                });
-            });
-            // Ambil daftar document type yang sudah ada
-            const usedDocumentTypes = {!! json_encode($utilitys->utilityDocuments->pluck('document_type')->toArray()) !!};
-            // console.log('Used Document Types:', usedDocumentTypes);
-
-            function loadDocumentTypes() {
-                $('#documentType').html('<option value="">Select Type</option>');
-
-                $.ajax({
-                    url: `/get-document-types/${subMenu}`,
-                    type: 'GET',
-                    success: function(response) {
-                        response.forEach(docType => {
-                            // Skip jika type sudah pernah digunakan
-                            if (!usedDocumentTypes.includes(docType.type)) {
-                                $('#documentType').append(
-                                    $('<option></option>')
+            $.ajax({
+                url: `/get-document-types/${subMenu}`,
+                type: 'GET',
+                success: function (response) {
+                    response.forEach(docType => {
+                        // Skip jika type sudah pernah digunakan
+                        if (!usedDocumentTypes.includes(docType.type)) {
+                            $('#documentType').append(
+                                $('<option></option>')
                                     .val(docType.type)
                                     .text(`${docType.type} (${docType.no_doc})`)
                                     .data('no_doc', docType.no_doc)
-                                );
-                            }
-                        });
-
-                        // Tambahkan event handler untuk document type change
-                        $('#documentType').off('change').on('change', function() {
-                            updateDocumentNumber(); // Panggil function update
-                            toggleFrequencyReview(); // Panggil function toggle
-                        });
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error loading document types:', error);
-                        loadFallbackDocumentTypes(subMenu);
-                    }
-                });
-            }
-
-
-            function updateDocumentNumber() {
-                const documentNumberElement = $('#documentNumber');
-                const serialNumber = $('#serial_number').val();
-                const selectedDocType = $('#documentType option:selected');
-
-                // Ambil building & department dari PHP (Blade)
-                const building = "{{ strtoupper(substr($utilitys->building, 0, 3)) }}";
-                const dept =
-                    "{{ strtoupper(substr($utilitys->department, 0, 3)) }}{{ strtoupper(substr($utilitys->dosageCode, 0, 3)) }}";
-
-                // Jika belum pilih document type
-                if (!selectedDocType.val()) {
-                    documentNumberElement.val('SELECT TYPE DOC ' + serialNumber);
-                    return;
-                }
-
-                // Ambil no_doc dari document type
-                const noDoc = selectedDocType.data('no_doc');
-                if (!noDoc) {
-                    documentNumberElement.prop('readonly', false);
-                    documentNumberElement.val('/' + serialNumber);
-                    return;
-                }
-
-                documentNumberElement.prop('readonly', true);
-
-                // Bentuk format nomor dokumen
-                // const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
-                const newDocumentNumber = `${noDoc}/${serialNumber}`;
-
-                documentNumberElement.val(newDocumentNumber);
-            }
-
-            // Event: saat serial number berubah, perbarui document number
-            $('#serial_number').on('change', function() {
-                updateDocumentNumber();
-            });
-            // Toggle collapse/expand form
-            function toggleCollapse() {
-                const content = document.getElementById('formContent');
-                const icon = document.getElementById('toggleIcon');
-
-                content.classList.toggle('collapsed');
-                icon.classList.toggle('collapsed');
-            }
-
-$('#documentForm').on('submit', function(e) {
-    e.preventDefault(); // Mencegah submit default
-    saveDocument();
-});
-
-            function saveDocument() {
-                const formData = new FormData($('#documentForm')[0]);
-
-                $.ajax({
-                    url: '{{ route("documents.store") }}',
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        // console.log(formData);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                            confirmButtonColor: '#4f46e5'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                location.reload(); // Refresh halaman
-                            }
-                        });
-                    },
-                    error: function(xhr) {
-                        let errorMessage = 'An error occurred';
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
+                            );
                         }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: errorMessage,
-                            confirmButtonColor: '#dc3545'
-                        });
-                    }
-                });
-            }
-            
-            $(document).ready(function() {
-                $('.edit-btn').on('click', function() {
-                    console.log($(this).data());
-                    const id = $(this).data('id');
-                    const docNumber = $(this).data('doc-number');
-                    const revision = $(this).data('rev');
-                    const requalification = $(this).data('req');
-                    const approveDate = $(this).data('approved');
-                    const nextReview = $(this).data('nextreview');
-                    const remark = $(this).data('remark');
-                    const frequency = $(this).data('frequency');
+                    });
 
-                    // isi field di modal
-                    $('#editId').val(id);
-                    $('#modalDocNumber').text(docNumber);
-                    $('#editDocNumber').val(docNumber);
-                    $('#editRevision').val(revision);
-                    $('#editRequalification').val(requalification);
-                    $('#editApproveDate').val(approveDate);
-                    $('#editNextReview').val(nextReview);
-                    $('#editRemark').val(remark);
-                    $('#editfrequencyReview').val(frequency);
-
-                    // tampilkan modal
-                    $('#editModal').modal('show');
-                });
-            });
-
-
-            function toggleFrequencyReview() {
-                const allowedTypes = ['Validation Report', 'Performance Qualification Report'];
-                const selectedType = $('#documentType').val();
-
-                if (allowedTypes.includes(selectedType) ||
-                    (selectedType === 'Operational Qualification Report' && subMenu === 'computer')
-                ) {
-                    $('#frequencyReview').prop('disabled', false);
-                } else {
-                    $('#frequencyReview').prop('disabled', true).val('');
+                    // Tambahkan event handler untuk document type change
+                    $('#documentType').off('change').on('change', function () {
+                        updateDocumentNumber(); // Panggil function update
+                        toggleFrequencyReview(); // Panggil function toggle
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading document types:', error);
+                    loadFallbackDocumentTypes(subMenu);
                 }
-            }
-// Next Review Calculation auto fill
-    document.addEventListener('DOMContentLoaded', function() {
-        const approvedateInput = document.getElementById('approveDate');
-        const reviewFrequency = document.getElementById('frequencyReview');
-        const nextreviewInput = document.getElementById('nextReview');
+            });
+        }
 
-        // Function to calculate next review date
-        function calculateNextReview() {
-            const approvedate = new Date(approvedateInput.value);
-            const frequency = parseInt(reviewFrequency.value);
 
-            if (!approvedate || !frequency) {
-                nextreviewInput.value = '';
+        function updateDocumentNumber() {
+            const documentNumberElement = $('#documentNumber');
+            const serialNumber = $('#serial_number').val();
+            const selectedDocType = $('#documentType option:selected');
+
+            // Ambil building & department dari PHP (Blade)
+            const building = "{{ strtoupper(substr($utilitys->building, 0, 3)) }}";
+            const dept =
+                "{{ strtoupper(substr($utilitys->department, 0, 3)) }}{{ strtoupper(substr($utilitys->dosageCode, 0, 3)) }}";
+
+            // Jika belum pilih document type
+            if (!selectedDocType.val()) {
+                documentNumberElement.val('SELECT TYPE DOC ' + serialNumber);
                 return;
             }
 
-            // Calculate next review date
-            const nextReviewDate = new Date(approvedate);
-            nextReviewDate.setMonth(nextReviewDate.getMonth() + frequency);
+            // Ambil no_doc dari document type
+            const noDoc = selectedDocType.data('no_doc');
+            if (!noDoc) {
+                documentNumberElement.prop('readonly', false);
+                documentNumberElement.val('/' + serialNumber);
+                return;
+            }
 
-            // Format as YYYY-MM-DD for the date input
-            const formattedDate = nextReviewDate.toISOString().split('T')[0];
-            nextreviewInput.value = formattedDate;
+            documentNumberElement.prop('readonly', true);
+
+            // Bentuk format nomor dokumen
+            // const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
+            const newDocumentNumber = `${noDoc}/${serialNumber}`;
+
+            documentNumberElement.val(newDocumentNumber);
         }
 
-        // Event listeners
-        approvedateInput.addEventListener('change', calculateNextReview);
-        reviewFrequency.addEventListener('change', calculateNextReview);
-    });
-</script>
+        // Event: saat serial number berubah, perbarui document number
+        $('#serial_number').on('change', function () {
+            updateDocumentNumber();
+        });
+        // Toggle collapse/expand form
+        function toggleCollapse() {
+            const content = document.getElementById('formContent');
+            const icon = document.getElementById('toggleIcon');
 
-<!-- Script for custom file input label -->
-<script>
-    // Update custom file input label with selected filename
-    $('#editUpload').on('change', function() {
-        var fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').html(fileName || 'Choose file...');
-    });
-</script>
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+        }
+
+        $('#documentForm').on('submit', function (e) {
+            e.preventDefault(); // Mencegah submit default
+            saveDocument();
+        });
+
+        function saveDocument() {
+            const formData = new FormData($('#documentForm')[0]);
+
+            $.ajax({
+                url: '{{ route("documents.store") }}',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    // console.log(formData);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                        confirmButtonColor: '#4f46e5'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // Refresh halaman
+                        }
+                    });
+                },
+                error: function (xhr) {
+                    let errorMessage = 'An error occurred';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: errorMessage,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('.edit-btn').on('click', function () {
+                console.log($(this).data());
+                const id = $(this).data('id');
+                const docNumber = $(this).data('doc-number');
+                const revision = $(this).data('rev');
+                const requalification = $(this).data('req');
+                const approveDate = $(this).data('approved');
+                const nextReview = $(this).data('nextreview');
+                const remark = $(this).data('remark');
+                const frequency = $(this).data('frequency');
+
+                // isi field di modal
+                $('#editId').val(id);
+                $('#modalDocNumber').text(docNumber);
+                $('#editDocNumber').val(docNumber);
+                $('#editRevision').val(revision);
+                $('#editRequalification').val(requalification);
+                $('#editApproveDate').val(approveDate);
+                $('#editNextReview').val(nextReview);
+                $('#editRemark').val(remark);
+                $('#editfrequencyReview').val(frequency);
+
+                // tampilkan modal
+                $('#editModal').modal('show');
+            });
+        });
+
+
+        function toggleFrequencyReview() {
+            const allowedTypes = ['Validation Report', 'Performance Qualification Report'];
+            const selectedType = $('#documentType').val();
+
+            if (allowedTypes.includes(selectedType) ||
+                (selectedType === 'Operational Qualification Report' && subMenu === 'computer')
+            ) {
+                $('#frequencyReview').prop('disabled', false);
+            } else {
+                $('#frequencyReview').prop('disabled', true).val('');
+            }
+        }
+        // Next Review Calculation auto fill
+        document.addEventListener('DOMContentLoaded', function () {
+            const approvedateInput = document.getElementById('approveDate');
+            const reviewFrequency = document.getElementById('frequencyReview');
+            const nextreviewInput = document.getElementById('nextReview');
+
+            // Function to calculate next review date
+            function calculateNextReview() {
+                const approvedate = new Date(approvedateInput.value);
+                const frequency = parseInt(reviewFrequency.value);
+
+                if (!approvedate || !frequency) {
+                    nextreviewInput.value = '';
+                    return;
+                }
+
+                // Calculate next review date
+                const nextReviewDate = new Date(approvedate);
+                nextReviewDate.setMonth(nextReviewDate.getMonth() + frequency);
+
+                // Format as YYYY-MM-DD for the date input
+                const formattedDate = nextReviewDate.toISOString().split('T')[0];
+                nextreviewInput.value = formattedDate;
+            }
+
+            // Event listeners
+            approvedateInput.addEventListener('change', calculateNextReview);
+            reviewFrequency.addEventListener('change', calculateNextReview);
+        });
+    </script>
+
+    <!-- Script for custom file input label -->
+    <script>
+        // Update custom file input label with selected filename
+        $('#editUpload').on('change', function () {
+            var fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').html(fileName || 'Choose file...');
+        });
+    </script>
 
 @endsection

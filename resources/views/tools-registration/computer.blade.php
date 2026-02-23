@@ -75,7 +75,7 @@
                                 <div class="form-group">
                                     <label class="font-weight-semibold">Building</label>
                                     <select class="form-control" name="building">
-                                        <option value="">All Buildings</option>
+                                        <option value="ALL" {{ request('building') == 'ALL' ? 'selected' : '' }}>All Buildings</option>
                                         <option value="NBL" {{ request('building') == 'NBL' ? 'selected' : '' }}>NBL</option>
                                         <option value="CPL" {{ request('building') == 'CPL' ? 'selected' : '' }}>CPL</option>
                                         <option value="QC" {{ request('building') == 'QC' ? 'selected' : '' }}>QC</option>
@@ -103,6 +103,7 @@
                                         <option value="PR" {{ request('department') == 'PR' ? 'selected' : '' }}>PR</option>
                                         <option value="LG" {{ request('department') == 'LG' ? 'selected' : '' }}>LG</option>
                                         <option value="RD" {{ request('department') == 'RD' ? 'selected' : '' }}>RD</option>
+                                        <option value="QS" {{ request('department') == 'QS' ? 'selected' : '' }}>QS</option>
                                         <option value="QA" {{ request('department') == 'QA' ? 'selected' : '' }}>QA</option>
                                         <option value="QC" {{ request('department') == 'QC' ? 'selected' : '' }}>QC</option>
                                         <option value="IT" {{ request('department') == 'IT' ? 'selected' : '' }}>IT</option>
@@ -243,8 +244,9 @@
                                 <label class="font-weight-semibold">Building</label>
                                 <select class="form-control" name="building" id="building" required>
                                     <option value="">Select Building</option>
+                                    <option value="ALL">All Buildings</option>
                                     <option value="NBL">NBL</option>
-                                    <option value="CPL">CPL</option>
+                                    <option value="CPL">CPL</option>    
                                     <option value="QC">QC</option>
                                     <option value="RD">RD</option>
                                     <option value="LG">LG</option>
@@ -264,10 +266,12 @@
                                 <label class="font-weight-semibold">Department</label>
                                 <select class="form-control" name="department" id="department" required>
                                     <option value="">Select Department</option>
+                                    <option value="ALL">All Departments</option>
                                     <option value="TM">TM (Technical and Maintenance)</option>
                                     <option value="PR">PR (Production)</option>
                                     <option value="LG">LG (Logistic)</option>
                                     <option value="RD">RD (Research and Development)</option>
+                                    <option value="QS">QS (Quality System)</option>
                                     <option value="QA">QA (Quality Assurance)</option>
                                     <option value="QC">QC (Quality Control)</option>
                                     <option value="IT">IT (Information Technology)</option>
