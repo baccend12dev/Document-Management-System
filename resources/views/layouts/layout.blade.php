@@ -178,6 +178,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Room Qualification</p>
                                     </a>
+                                    <a href="/room-master" class="nav-link {{ request()->is('room-master*') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Room Master</p>
+                                    </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/tools-registration/computer" class="nav-link {{ request()->is('tools-registration/computer*') ? 'active' : '' }}">
@@ -205,15 +209,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </li>
                             </ul>
                         </li>
+                        
+                        @endif
+                        <!-- Document Registration -->
+                        @if(auth()->user()->role == 'technician' || auth()->user()->role == 'admin' || auth()->user()->role == 'supervisor')
                         <li class="nav-item">
                             <a href="/utility-masterlist" class="nav-link {{ request()->is('utility-masterlist*') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Utility Masterlist</p>
                             </a>
                         </li>
-                        @endif
-                        <!-- Document Registration -->
-                        @if(auth()->user()->role == 'technician' || auth()->user()->role == 'admin' || auth()->user()->role == 'supervisor')
                         <li class="nav-item">
                             <a href="/document-registration"
                             class="nav-link {{ request()->is('document-registration*') ? 'active' : '' }}"

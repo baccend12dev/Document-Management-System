@@ -13,6 +13,7 @@ class DocumentHistory extends Model
     protected $table = 'QA_KKVDocumentHistory';
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
+    
 
     /**
      * Get the document that owns the history

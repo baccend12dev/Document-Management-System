@@ -503,12 +503,6 @@
                                     placeholder="Enter Model & Type">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Subject</label>
-                                <select class="form-control" name="subject" id="subject" required>
-                                    <option value="">Select Subject</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
                                 <label class="font-weight-bold">Approve Date</label>
                                 <input type="date" id="approveDate" name="approvedate" class="form-control">
                             </div>
@@ -742,31 +736,8 @@
             let subMenu = "{{ $document->sub_menu }}";
             $(document).ready(function() {
                 loadDocumentTypes();
-                loadSubjectOptions();
                 toggleFrequencyReview();
             });
-
-
-            //function load subject options based on sub menu
-            const menuMapping = {
-                'equipment': ['Equipment'],
-                'utility': ['PW', 'WFI', 'COAF', 'N2'],
-                'room': [' '],
-                'computer': ['System'],
-                'process-mediafill': ['Product'],
-                'cleaning': ['Equipment', 'Product'],
-                'analytical-method': ['Product'],
-                'default': ['General', 'Checklist', 'Report']
-            };
-            // Kosongkan dropdown
-            $('#subject').empty();
-
-            function loadSubjectOptions() {
-                const subjects = menuMapping[subMenu] || menuMapping['default'];
-                subjects.forEach(subject => {
-                    $('#subject').append(new Option(subject, subject));
-                });
-            }
 
             document.querySelectorAll('.view-pdf').forEach(button => {
                 button.addEventListener('click', function() {
@@ -983,6 +954,35 @@ $('#documentForm').on('submit', function(e) {
         // Event listeners
         approvedateInput.addEventListener('change', calculateNextReview);
         reviewFrequency.addEventListener('change', calculateNextReview);
+    });
+
+    // Next Review Calculation auto fill for EDIT MODAL
+    document.addEventListener('DOMContentLoaded', function() {
+        const editApproveDate = document.getElementById('editApproveDate');
+        const editFrequencyReview = document.getElementById('editfrequencyReview');
+        const editNextReview = document.getElementById('editNextReview');
+
+        function calculateEditNextReview() {
+            const approveDateValue = editApproveDate.value;
+            const frequencyValue = parseInt(editFrequencyReview.value);
+
+            if (!approveDateValue || !frequencyValue) {
+                // We might not want to clear it if it was already set, 
+                // but for consistency with the add form:
+                // editNextReview.value = ''; 
+                return;
+            }
+
+            const approveDate = new Date(approveDateValue);
+            const nextReviewDate = new Date(approveDate);
+            nextReviewDate.setMonth(nextReviewDate.getMonth() + frequencyValue);
+
+            const formattedDate = nextReviewDate.toISOString().split('T')[0];
+            editNextReview.value = formattedDate;
+        }
+
+        editApproveDate.addEventListener('change', calculateEditNextReview);
+        editFrequencyReview.addEventListener('change', calculateEditNextReview);
     });
 </script>
 

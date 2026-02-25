@@ -71,7 +71,7 @@
                                             Revision {{ $history->revision_number }} - Requalification {{ $history->requalification }}
                                         </h6>
                                         <small class="{{ $index == 0 ? 'text-white-50' : 'text-muted' }}">
-                                            <i class="fas fa-clock mr-1"></i>{{ $history->created_at->format('d M Y, H:i') }}
+                                            <i class="fas fa-clock mr-1"></i>{{ \Carbon\Carbon::parse(substr($history->getOriginal('created_at'), 0, 19))->format('d M Y, H:i') }}
                                         </small>
                                     </div>
                                     <div>
@@ -82,13 +82,16 @@
                                                 <i class="fas fa-download mr-1"></i>Download
                                             </a>
                                         @endif
+                                        <button type="button" class="btn btn-sm btn-primary" data-document-id="{{ $history->id }}" data-document-number="{{ $history->doc_number }}" onclick="viewPdf(this)">
+                                            <i class="fas fa-eye mr-1"></i>View PDF
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <p class="mb-2"><strong><i class="fas fa-calendar-check text-success mr-2"></i>Approve Date:</strong></p>
-                                            <p class="text-muted">{{ $history->approve_date ? \Carbon\Carbon::parse($history->approve_date)->format('d M Y') : '-' }}</p>
+                                            <p class="text-muted">{{ $history->approved_date ? \Carbon\Carbon::parse($history->approved_date)->format('d M Y') : '-' }}</p>
                                         </div>
                                         <div class="col-md-6">
                                             <p class="mb-2"><strong><i class="fas fa-calendar-alt text-warning mr-2"></i>Next Review:</strong></p>
@@ -96,18 +99,18 @@
                                         </div>
                                     </div>
 
-                                    @if($history->remark)
+                                    @if($history->remarks)
                                     <div class="mt-3 p-3 bg-light rounded">
                                         <p class="mb-1"><strong><i class="fas fa-comment-alt text-info mr-2"></i>Remark:</strong></p>
-                                        <p class="mb-0 text-muted">{{ $history->remark }}</p>
+                                        <p class="mb-0 text-muted">{{ $history->remarks }}</p>
                                     </div>
                                     @endif
 
                                     <div class="mt-3 pt-3 border-top">
                                         <small class="text-muted">
-                                            <i class="fas fa-user mr-1"></i>Updated by: <strong>{{ 'System' }}</strong>
-                                            @if($history->updated_at)
-                                                <span class="ml-3"><i class="fas fa-clock mr-1"></i>{{ $history->updated_at->diffForHumans() }}</span>
+                                            <i class="fas fa-user mr-1"></i>Updated by: <strong>{{ $history->created_by }}</strong>
+                                            @if($history->getOriginal('updated_at'))
+                                                <span class="ml-3"><i class="fas fa-clock mr-1"></i>{{ \Carbon\Carbon::parse(substr($history->getOriginal('updated_at'), 0, 19))->diffForHumans() }}</span>
                                             @endif
                                         </small>
                                     </div>
@@ -127,7 +130,22 @@
         </div>
     </div>
 </div>
-
+<!-- Modal PDF Viewer -->
+<div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfModalLabel">View Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="pdfFrame" width="100%" height="600px"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Custom CSS -->
 <style>
     .timeline {
@@ -191,4 +209,25 @@
         color: #28a745 !important;
     }
 </style>
+@endsection
+
+@section('scripts')
+    <script>
+      function viewPdf(button) {
+    const documentId = button.getAttribute('data-document-id');
+    const docNumber = button.getAttribute('data-document-number');
+    const pdfFrame = document.getElementById('pdfFrame');
+    const modalTitle = document.getElementById('pdfModalLabel');
+
+    // Ubah judul modal
+    modalTitle.textContent = 'View Document - ' + docNumber;
+
+    // Set iframe src (dengan cache-buster)
+    pdfFrame.src = "{{ url('documents/history/view') }}/" + documentId + "?t=" + new Date().getTime();
+
+    // Tampilkan modal
+    const modal = new bootstrap.Modal(document.getElementById('pdfViewerModal'));
+    modal.show();
+}  
+    </script>
 @endsection

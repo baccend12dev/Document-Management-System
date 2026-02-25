@@ -388,7 +388,7 @@ class DocumentController extends Controller
                     'sub_menu' => $data['sub_menu'],
                     'revision_number' => $data['revision_number'],
                     'requalification' => $data['requalification'],
-                    'subject' => $data['subject'],
+                    // 'subject' => $data['subject'],
                     'modelType' => $data['modelType'],
                     'approved_date' => $data['approvedate'],
                     'next_review' => $data['nextreview'],
@@ -534,7 +534,18 @@ class DocumentController extends Controller
                 // simpan path baru
                 $document->file_path = $filePath;
             }
-            
+            //add to history
+            $history = DocumentHistory::create([
+                'document_id' => $document->id,
+                'doc_number' => $document->doc_number,
+                'revision_number' => $document->revision_number,
+                'requalification' => $document->requalification,
+                'approved_date' => $document->approved_date,
+                'next_review' => $document->next_review,
+                'file_path' => $document->file_path,
+                'remarks' => $document->remarks,
+                'created_by' => auth()->user()->username,
+            ]); 
             $document->save();
 
             // return view (no JSON, no validation)
@@ -564,7 +575,7 @@ class DocumentController extends Controller
             $filePath = storage_path('app/public/' . $document->file_path);
             
             if (!file_exists($filePath)) {
-                \Log::error("File not found: " . $filePath);
+                // \Log::error("File not found: " . $filePath);
                 abort(404, 'File tidak ditemukan');
             }
             
@@ -574,7 +585,7 @@ class DocumentController extends Controller
             ]);
             
         } catch (\Exception $e) {
-            \Log::error("Error viewing document: " . $e->getMessage());
+            // \Log::error("Error viewing document: " . $e->getMessage());
             abort(404, 'Dokumen tidak dapat ditampilkan');
         }
     }

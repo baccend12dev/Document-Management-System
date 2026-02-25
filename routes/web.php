@@ -60,6 +60,7 @@ Route::get('/documents/download/{id}', 'DocumentController@downloadDocument')->n
 
 //view document history
 Route::get('/documents/history/{id}', 'HistoryController@show')->name('documents.history');
+Route::get('/documents/history/view/{id}', 'HistoryController@viewDocument')->name('documents.history.view');
 
 
 
@@ -86,6 +87,12 @@ Route::get('/api/products-by-active-substance', 'ToolsRegistrationController@get
     Route::delete('/utility-masterlist/{id}', 'UtilityMasterlistController@destroy')->name('utility.masterlist.destroy');
 
     Route::get('/utility/document/{id}', 'UtilityMasterlistController@showDocument')->name('utility.document');
+
+    // Room Master
+    Route::get('/room-master', 'RoomMasterController@index')->name('room.master.index');
+    Route::post('/room-master', 'RoomMasterController@store')->name('room.master.store');
+    Route::put('/room-master/{id}', 'RoomMasterController@update')->name('room.master.update');
+    Route::delete('/room-master/{id}', 'RoomMasterController@destroy')->name('room.master.destroy');
 });
 
 

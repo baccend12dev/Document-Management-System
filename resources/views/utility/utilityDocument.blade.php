@@ -696,7 +696,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <!-- Next Review -->
                             <div class="col-md-6">
@@ -704,11 +703,11 @@
                                     <label for="editNextReview" class="font-weight-semibold">
                                         Next Review <span class="text-danger">*</span>
                                     </label>
-                                    <input type="date" name="next_review" id="editNextReview" class="form-control">
+                                    <input type="date" name="next_review" id="editNextReview" class="form-control" readonly>
                                 </div>
                             </div>
 
-                            <!-- frequency review -->
+                            <!-- Frequency Review -->
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="editfrequencyReview" class="font-weight-semibold">
@@ -840,9 +839,8 @@
             const selectedDocType = $('#documentType option:selected');
 
             // Ambil building & department dari PHP (Blade)
-            const building = "{{ strtoupper(substr($utilitys->building, 0, 3)) }}";
-            const dept =
-                "{{ strtoupper(substr($utilitys->department, 0, 3)) }}{{ strtoupper(substr($utilitys->dosageCode, 0, 3)) }}";
+            const building = $('#building').val();
+            const dept = $('#department').val();
 
             // Jika belum pilih document type
             if (!selectedDocType.val()) {
@@ -861,8 +859,8 @@
             documentNumberElement.prop('readonly', true);
 
             // Bentuk format nomor dokumen
-            // const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
-            const newDocumentNumber = `${noDoc}/${serialNumber}`;
+            const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
+            // const newDocumentNumber = `${noDoc}/${serialNumber}`;
 
             documentNumberElement.val(newDocumentNumber);
         }
@@ -871,6 +869,13 @@
         $('#serial_number').on('change', function () {
             updateDocumentNumber();
         });
+        $('#building').on('change', function () {
+            updateDocumentNumber();
+        });
+        $('#department').on('change', function () {
+            updateDocumentNumber();
+        });
+
         // Toggle collapse/expand form
         function toggleCollapse() {
             const content = document.getElementById('formContent');
@@ -995,6 +1000,34 @@
             approvedateInput.addEventListener('change', calculateNextReview);
             reviewFrequency.addEventListener('change', calculateNextReview);
         });
+        // Next Review Calculation auto fill for EDIT MODAL
+    document.addEventListener('DOMContentLoaded', function() {
+        const editApproveDate = document.getElementById('editApproveDate');
+        const editFrequencyReview = document.getElementById('editfrequencyReview');
+        const editNextReview = document.getElementById('editNextReview');
+
+        function calculateEditNextReview() {
+            const approveDateValue = editApproveDate.value;
+            const frequencyValue = parseInt(editFrequencyReview.value);
+
+            if (!approveDateValue || !frequencyValue) {
+                // We might not want to clear it if it was already set, 
+                // but for consistency with the add form:
+                // editNextReview.value = ''; 
+                return;
+            }
+
+            const approveDate = new Date(approveDateValue);
+            const nextReviewDate = new Date(approveDate);
+            nextReviewDate.setMonth(nextReviewDate.getMonth() + frequencyValue);
+
+            const formattedDate = nextReviewDate.toISOString().split('T')[0];
+            editNextReview.value = formattedDate;
+        }
+
+        editApproveDate.addEventListener('change', calculateEditNextReview);
+        editFrequencyReview.addEventListener('change', calculateEditNextReview);
+    });
     </script>
 
     <!-- Script for custom file input label -->

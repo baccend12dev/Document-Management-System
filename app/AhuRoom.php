@@ -12,6 +12,7 @@ class AhuRoom extends Model
     protected $table = 'QA_KKVahu_code';
     // use guard
     protected $guarded = [];
+    public $timestamps = false;
     // Relasi dengan EquipmentQualification
     public function equipmentQualification()
     {
