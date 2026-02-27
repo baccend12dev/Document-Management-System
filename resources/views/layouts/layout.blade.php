@@ -156,7 +156,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <p>Dashboard</p>
                             </a>
                         </li>
-                        @if(auth()->user()->role == 'supervisor' || auth()->user()->role == 'admin' || auth()->user()->role == 'technician')
+                        @if(auth()->user()->role == 'supervisor' || auth()->user()->role == 'admin')
                         <li class="nav-item has-treeview {{ request()->is('tools-registration*') ? 'menu-open' : '' }}">
                             <a href="#" class="nav-link {{ request()->is('tools-registration*') ? 'active' : '' }}" 
                                data-toggle="tooltip" data-placement="right" title="Tools Registration">
