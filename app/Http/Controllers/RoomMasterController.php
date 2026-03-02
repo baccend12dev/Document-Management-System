@@ -37,7 +37,11 @@ class RoomMasterController extends Controller
 
     public function store(Request $request)
     {
-
+        //room_code must be unique
+        $room = AhuRoom::where('room_code', $request->room_code)->first();
+        if ($room) {
+            return redirect()->back()->with('error', 'Room code already exists.');
+        }
         AhuRoom::create($request->all());
         return redirect()->back()->with('success', 'Room created successfully.');
     }

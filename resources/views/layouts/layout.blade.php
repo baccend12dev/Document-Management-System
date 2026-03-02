@@ -50,7 +50,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </head>
 
 <!-- <body class="hold-transition sidebar-mini layout-fixed"> -->
-    <body class="hold-transition sidebar-mini sidebar-collapse">
+    <body class="hold-transition sidebar-mini sidebar-collapse layout-fixed">
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -178,10 +178,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Room Qualification</p>
                                     </a>
-                                    <a href="/room-master" class="nav-link {{ request()->is('room-master*') ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Room Master</p>
-                                    </a>
+                                    
                                 </li>
                                 <li class="nav-item">
                                     <a href="/tools-registration/computer" class="nav-link {{ request()->is('tools-registration/computer*') ? 'active' : '' }}">

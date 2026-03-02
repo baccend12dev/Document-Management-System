@@ -55,36 +55,34 @@
             <!-- Header -->
             <div class="card shadow-lg" style="border-radius: 0.5rem; border-left: 4px solid #4f46e5;">
                 <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="col-md-8">
-                            <label class="font-weight-bold d-block mb-2">Quick Navigation - Select Sub-Menu:</label>
-                            <select class="form-control submenu-selector form-control-lg"
-                                onchange="navigateToSubMenu(this.value)">
-                                <option value="">-- Select a Sub-Menu --</option>
-                                <optgroup label="Qualification">
-                                    <option value="equipment">⚙️ Equipment Qualification</option>
-                                    <option value="utility">⚡ Utility Qualification</option>
-                                    <option value="room" selected>🏢 Room Qualification</option>
-                                </optgroup>
-                                <optgroup label="Validation">
-                                    <option value="computer">💻 Computerized System Validation</option>
-                                    <option value="process-mediafill">🧪 Process & Mediafill Validation</option>
-                                    <option value="cleaning">🧹 Cleaning Validation</option>
-                                    <option value="analytical-method">📊 Analytical Method Cleaning Validation</option>
-                                </optgroup>
-                            </select>
-                        </div>
+                    <div class="h5">Filter & Search Room</div>
+            <form method="GET" action="{{ route('tools.show', 'room') }}" class="mt-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="text" name="search" class="form-control" placeholder="Search product name or code..." value="{{ request('search') }}">
                     </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary-custom">Search</button>
+                        <a href="{{ route('tools.show', 'room') }}" class="btn btn-light border">Reset</a>
+                    </div>
+                </div>
+            </form>
                 </div>
             </div>
 
             <!-- Data Table -->
             <div class="card shadow-lg">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 font-weight-bold">Room List</h5>
-                    <button type="button" class="btn btn-light btn-sm font-weight-bold" onclick="document.getElementById('addRoomForm').scrollIntoView({ behavior: 'smooth' });">
-                        <i class="fas fa-plus"></i> Add New
-                    </button>
+                    <h5 class="mb-0 font-weight-bold">Room Qualification List</h5>
+                    <div class="d-flex gap-4">
+                        <button type="button" class="btn btn-light btn-sm font-weight-bold mr-2" onclick="document.getElementById('addRoomForm').scrollIntoView({ behavior: 'smooth' });">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                        <!-- button to Room Master -->
+                        <a href="/room-master" class="btn btn-light btn-sm font-weight-bold">
+                            <i class="fas fa-list"></i> Room Master
+                        </a>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">

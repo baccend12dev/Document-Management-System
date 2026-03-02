@@ -187,6 +187,7 @@
                                 <option value="{{ $serviceArea }}">{{ $serviceArea }}</option>
                             @endforeach
                         </select>
+                        <small class="text-muted">You can type a new value if it's not in the list.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -226,7 +227,13 @@
                     </div>
                     <div class="form-group">
                         <label>Service Area</label>
-                        <input type="text" class="form-control" name="service_area" id="edit_service_area" required>
+                        <select name="service_area" id="edit_service_area" class="form-control" required>
+                            <option value="">Select Service Area</option>
+                            @foreach ($serviceAreas as $serviceArea)
+                                <option value="{{ $serviceArea }}">{{ $serviceArea }}</option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">You can type a new value if it's not in the list.</small>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -267,7 +274,15 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.find('#edit_room_name').val(room_name);
         modal.find('#edit_room_code').val(room_code);
         modal.find('#edit_ahu_code').val(ahu_code);
-        modal.find('#edit_service_area').val(service_area);
+
+        // Set value on the Select2 (add option if it doesn't exist yet)
+        var $editSA = modal.find('#edit_service_area');
+        if ($editSA.find('option[value="' + service_area + '"]').length === 0) {
+            $editSA.append(new Option(service_area, service_area, true, true));
+        } else {
+            $editSA.val(service_area);
+        }
+        $editSA.trigger('change');
         
         // Update the form action
         var formAction = "{{ url('/room-master') }}/" + id;
@@ -275,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     $(document).ready(function() {
+        // Filter dropdown (no tags)
         if ($('#service_area_filter').length) {
             $('#service_area_filter').select2({
                 placeholder: "-- All Service Areas --",
@@ -282,6 +298,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 width: '100%'
             });
         }
+
+        // Add Modal – allow typing custom value
+        $('#service_area').select2({
+            tags: true,
+            placeholder: 'Select or type a Service Area',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#addModal')
+        });
+
+        // Edit Modal – allow typing custom value
+        $('#editModal').on('shown.bs.modal', function() {
+            if (!$('#edit_service_area').data('select2')) {
+                $('#edit_service_area').select2({
+                    tags: true,
+                    placeholder: 'Select or type a Service Area',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#editModal')
+                });
+            }
+        });
     });
 </script>
 @endpush
