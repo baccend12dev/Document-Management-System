@@ -7,6 +7,7 @@ use App\ModelUtilityMasterlist;
 use App\ModelUtilityDropdown;
 use App\DocumentEquipment;
 use Illuminate\Http\Request;
+use App\AhuRoom;
 
 class UtilityMasterlistController extends Controller
 {
@@ -22,8 +23,15 @@ class UtilityMasterlistController extends Controller
         $locations = ModelUtilityDropdown::pluck('location')->toArray();
         $serviceareas = ModelUtilityDropdown::pluck('servicearea')->toArray();
 
-        $roomNumbers = \DB::table('QA_KKVUtilityListRoom')->pluck('roomNumber')->toArray();
-        $roomNames = \DB::table('QA_KKVUtilityListRoom')->pluck('roomName')->toArray();
+        // $serviceareas = array_unique($serviceareas);
+        $rooms = AhuRoom::all();
+
+        // Group rooms by service_area for client-side filtering
+        $roomsByArea = $rooms->groupBy('service_area')->map(function ($group) {
+            return $group->map(function ($r) {
+                return ['room_code' => $r->room_code, 'room_name' => $r->room_name];
+            })->values();
+        });
 
         return view('utility.utilityMasterlist', compact(
             'data',
@@ -33,8 +41,8 @@ class UtilityMasterlistController extends Controller
             'buildings',
             'locations',
             'serviceareas',
-            'roomNumbers',
-            'roomNames'
+            'rooms',
+            'roomsByArea'
         ));
     }
 

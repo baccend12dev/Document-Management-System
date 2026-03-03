@@ -108,32 +108,32 @@
                             </select>
                         </div>
 
-                        {{-- Service Area --}}
+                        {{-- Service Area (unique values) --}}
                         <div class="col-md-3 mb-3">
                             <label for="servicearea">Service Area</label>
                             <select name="servicearea[]" id="servicearea" class="form-control select2" multiple="multiple" data-placeholder="Pilih Service Area">
-                                @foreach($serviceareas as $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @foreach($rooms->pluck('service_area')->unique()->values() as $area)
+                                    <option value="{{ $area }}">{{ $area }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        {{-- Room Number --}}
+                        {{-- Room Number (semua pre-render, difilter via JS) --}}
                         <div class="col-md-3 mb-3">
                             <label for="roomNumber">Room Number</label>
                             <select name="roomNumber[]" id="roomNumber" class="form-control select2" multiple="multiple" data-placeholder="Pilih Room Number">
-                                @foreach($roomNumbers as $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->room_code }}" data-area="{{ $room->service_area }}">{{ $room->room_code }}</option>
                                 @endforeach
                             </select>
                         </div>
 
-                        {{-- Room Name --}}
+                        {{-- Room Name (semua pre-render, difilter via JS) --}}
                         <div class="col-md-3 mb-3">
                             <label for="roomName">Room Name</label>
                             <select name="roomName[]" id="roomName" class="form-control select2" multiple="multiple" data-placeholder="Pilih Room Name">
-                                @foreach($roomNames as $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->room_name }}" data-area="{{ $room->service_area }}">{{ $room->room_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -336,24 +336,24 @@
                         <div class="col-md-6 mb-3">
                             <label>Service Area</label>
                             <select name="servicearea[]" id="editServicearea" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Service Area">
-                                @foreach($serviceareas as $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @foreach($rooms->pluck('service_area')->unique()->values() as $area)
+                                    <option value="{{ $area }}">{{ $area }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Room Number</label>
                             <select name="roomNumber[]" id="editRoomNumber" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Room Number">
-                                @foreach($roomNumbers as $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->room_code }}" data-area="{{ $room->service_area }}">{{ $room->room_code }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Room Name</label>
                             <select name="roomName[]" id="editRoomName" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Room Name">
-                                @foreach($roomNames as $item)
-                                    <option value="{{ $item }}">{{ $item }}</option>
+                                @foreach($rooms as $room)
+                                    <option value="{{ $room->room_name }}" data-area="{{ $room->service_area }}">{{ $room->room_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -371,54 +371,159 @@
 
 @section('scripts')
 <script>
-$(document).ready(function() {
-    // Init Select2 for main form with tags enabled (allow custom input)
-    $('.select2').select2({
-        tags: true,
-        width: '100%',
-        placeholder: function() {
-            return $(this).data('placeholder');
+// Peta: service_area -> [{room_code, room_name}, ...]
+var roomsByArea = @json($roomsByArea);
+
+/**
+ * Sinkronkan dropdown Room Number & Room Name berdasarkan service area yang dipilih.
+ * - Option yang ada di DB ditampilkan/disembunyikan (hidden option tetap bisa di-select)
+ * - Auto-pilih semua room yang termasuk dalam service area yang dipilih
+ * - Boleh tetap pilih / tambah manual (karena tags:true)
+ * - Jika savedNumbers/savedNames diisi, nilai tsb di-restore (untuk edit modal)
+ *
+ * @param {jQuery}   $rn         - select#roomNumber
+ * @param {jQuery}   $rnm        - select#roomName
+ * @param {string[]} areas       - service_area yang dipilih
+ * @param {string[]} savedNum    - nilai roomNumber yg harus di-restore (opsional)
+ * @param {string[]} savedName   - nilai roomName yg harus di-restore (opsional)
+ */
+function syncRoomDropdowns($rn, $rnm, areas, savedNum, savedName) {
+    // Nilai yang sudah dipilih sebelumnya (untuk dipertahankan jika masih relevan)
+    var prevNum  = $rn.val()  || [];
+    var prevName = $rnm.val() || [];
+
+    // Kumpulkan codes & names dari area-area yang dipilih
+    var areaCodes = [];
+    var areaNames = [];
+    $.each(areas, function(i, area) {
+        var key = $.trim(area);
+        if (roomsByArea[key]) {
+            $.each(roomsByArea[key], function(j, room) {
+                areaCodes.push(room.room_code);
+                areaNames.push(room.room_name);
+            });
         }
     });
 
-    // Init Select2 for edit modal (need to re-init after modal shown)
+    // ---- Untuk select tags:true: kita perlu memastikan option ada di DOM ----
+    // Tambahkan option dari area yang dipilih jika belum ada
+    $.each(areaCodes, function(i, code) {
+        if ($rn.find('option[value="' + code.replace(/"/g, '\\"') + '"]').length === 0) {
+            $rn.append($('<option>', { value: code, text: code }));
+        }
+    });
+    $.each(areaNames, function(i, name) {
+        if ($rnm.find('option[value="' + name.replace(/"/g, '\\"') + '"]').length === 0) {
+            $rnm.append($('<option>', { value: name, text: name }));
+        }
+    });
+
+    // Tentukan nilai akhir
+    var finalNum, finalName;
+    if (savedNum !== undefined && savedNum !== null) {
+        // Mode edit: restore nilai tersimpan
+        // Pastikan option tersedia untuk nilai custom
+        $.each(savedNum, function(i, v) {
+            if (v && $rn.find('option[value="' + v.replace(/"/g, '\\"') + '"]').length === 0) {
+                $rn.append($('<option>', { value: v, text: v }));
+            }
+        });
+        $.each(savedName, function(i, v) {
+            if (v && $rnm.find('option[value="' + v.replace(/"/g, '\\"') + '"]').length === 0) {
+                $rnm.append($('<option>', { value: v, text: v }));
+            }
+        });
+        finalNum  = savedNum.filter(function(v){ return v !== ''; });
+        finalName = savedName.filter(function(v){ return v !== ''; });
+    } else {
+        // Mode tambah: auto-pilih semua room dari area yang dipilih,
+        // plus pertahankan pilihan manual yang sudah ada
+        var manualNum  = prevNum.filter(function(v){ return areaCodes.indexOf(v) === -1; });
+        var manualName = prevName.filter(function(v){ return areaNames.indexOf(v) === -1; });
+        finalNum  = areaCodes.concat(manualNum);
+        finalName = areaNames.concat(manualName);
+    }
+
+    $rn.val(finalNum).trigger('change');
+    $rnm.val(finalName).trigger('change');
+}
+
+// Variabel untuk menyimpan data edit (diisi sebelum modal muncul)
+var pendingEdit = null;
+
+$(document).ready(function() {
+    // ---- Init Select2: form tambah ----
+    $('#subject, #system, #model, #building, #location').select2({
+        tags: true,
+        width: '100%',
+        placeholder: function() { return $(this).data('placeholder'); }
+    });
+    // Service area form tambah: hanya dari DB (tags:false)
+    $('#servicearea').select2({
+        tags: false,
+        width: '100%',
+        placeholder: 'Pilih Service Area'
+    });
+    // Room Number dan Room Name: tags:true agar bisa input manual
+    $('#roomNumber').select2({
+        tags: true,
+        width: '100%',
+        placeholder: 'Pilih Room Number'
+    });
+    $('#roomName').select2({
+        tags: true,
+        width: '100%',
+        placeholder: 'Pilih Room Name'
+    });
+
+    // Saat service area berubah (form tambah) → auto-pilih room dari area tsb
+    $('#servicearea').on('change', function() {
+        var selected = $(this).val() || [];
+        // undefined/null berarti mode tambah (auto-select, bukan restore)
+        syncRoomDropdowns($('#roomNumber'), $('#roomName'), selected, undefined, undefined);
+    });
+
+    // ---- Init Select2: edit modal (diinit setelah modal tampil) ----
     $('#editModal').on('shown.bs.modal', function () {
+        // Semua field edit pakai tags:true dalam satu panggilan
         $('.select2-edit').select2({
             tags: true,
             dropdownParent: $('#editModal'),
             width: '100%'
         });
+
+        // Terapkan data edit setelah Select2 siap
+        if (pendingEdit) {
+            var d = pendingEdit;
+            $('#editSubject').val(d.subject).trigger('change');
+            $('#editSystem').val(d.system).trigger('change');
+            $('#editModel').val(d.model).trigger('change');
+            $('#editBuilding').val(d.building).trigger('change');
+            $('#editLocation').val(d.location).trigger('change');
+            $('#editServicearea').val(d.servicearea).trigger('change');
+            $('#editRoomNumber').val(d.roomnumber).trigger('change');
+            $('#editRoomName').val(d.roomname).trigger('change');
+            pendingEdit = null;
+        }
     });
 
-    // Edit button click – populate modal fields
+    // ---- Edit button: simpan data ke pendingEdit, buka modal ----
     $('.btn-edit').on('click', function() {
-        var id          = $(this).data('id');
-        var subject     = $(this).data('subject') ? $(this).data('subject').toString().split(',') : [];
-        var system      = $(this).data('system') ? $(this).data('system').toString().split(',') : [];
-        var model       = $(this).data('model') ? $(this).data('model').toString().split(',') : [];
-        var building    = $(this).data('building') ? $(this).data('building').toString().split(',') : [];
-        var location    = $(this).data('location') ? $(this).data('location').toString().split(',') : [];
-        var servicearea = $(this).data('servicearea') ? $(this).data('servicearea').toString().split(',') : [];
-        var roomnumber  = $(this).data('roomnumber') ? $(this).data('roomnumber').toString().split(',') : [];
-        var roomname    = $(this).data('roomname') ? $(this).data('roomname').toString().split(',') : [];
-
-        // Set form action
+        var id = $(this).data('id');
+        pendingEdit = {
+            subject:     $(this).data('subject')     ? $(this).data('subject').toString().split(',')     : [],
+            system:      $(this).data('system')      ? $(this).data('system').toString().split(',')      : [],
+            model:       $(this).data('model')       ? $(this).data('model').toString().split(',')       : [],
+            building:    $(this).data('building')    ? $(this).data('building').toString().split(',')    : [],
+            location:    $(this).data('location')    ? $(this).data('location').toString().split(',')    : [],
+            servicearea: $(this).data('servicearea') ? $(this).data('servicearea').toString().split(',') : [],
+            roomnumber:  $(this).data('roomnumber')  ? $(this).data('roomnumber').toString().split(',')  : [],
+            roomname:    $(this).data('roomname')    ? $(this).data('roomname').toString().split(',')    : []
+        };
         $('#editForm').attr('action', '/utility-masterlist/' + id);
-
-        // Set values after a small delay to let Select2 init
-        setTimeout(function() {
-            $('#editSubject').val(subject).trigger('change');
-            $('#editSystem').val(system).trigger('change');
-            $('#editModel').val(model).trigger('change');
-            $('#editBuilding').val(building).trigger('change');
-            $('#editLocation').val(location).trigger('change');
-            $('#editServicearea').val(servicearea).trigger('change');
-            $('#editRoomNumber').val(roomnumber).trigger('change');
-            $('#editRoomName').val(roomname).trigger('change');
-        }, 300);
     });
 
-    // Delete confirmation with SweetAlert2
+    // ---- Delete confirmation ----
     $('.form-delete').on('submit', function(e) {
         e.preventDefault();
         var form = this;
@@ -432,24 +537,28 @@ $(document).ready(function() {
             confirmButtonText: 'Ya, hapus!',
             cancelButtonText: 'Batal'
         }).then(function(result) {
-            if (result.isConfirmed) {
-                form.submit();
-            }
+            if (result.isConfirmed) { form.submit(); }
         });
     });
 
-    // Spinner on submit
+    // ---- Spinner on submit ----
     $('#formUtilityMasterlist').on('submit', function() {
         $('#btnSave').prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...');
     });
 
-    // Expand Row Logic
-    $('.btn-expand').on('click', function() {
-        var tr = $(this).closest('tr');
-        var nextTr = tr.next('.expand-row');
-        var icon = $(this).find('i');
+    // ---- Reset button: kosongkan semua select2 termasuk room ----
+    $('button[type="reset"]').on('click', function() {
+        setTimeout(function() {
+            $('.select2').val(null).trigger('change');
+        }, 10);
+    });
 
-        if(nextTr.hasClass('d-none')) {
+    // ---- Expand Row Logic ----
+    $('.btn-expand').on('click', function() {
+        var tr     = $(this).closest('tr');
+        var nextTr = tr.next('.expand-row');
+        var icon   = $(this).find('i');
+        if (nextTr.hasClass('d-none')) {
             nextTr.removeClass('d-none');
             $(this).removeClass('btn-success').addClass('btn-danger');
             icon.removeClass('fa-plus').addClass('fa-minus');
