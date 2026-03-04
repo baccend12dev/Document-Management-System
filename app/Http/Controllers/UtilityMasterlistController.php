@@ -32,7 +32,7 @@ class UtilityMasterlistController extends Controller
                 return ['room_code' => $r->room_code, 'room_name' => $r->room_name];
             })->values();
         });
-
+        $serviceareas = $roomsByArea->keys()->toArray();
         return view('utility.utilityMasterlist', compact(
             'data',
             'subjects',
