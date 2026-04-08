@@ -121,6 +121,8 @@ class DocumentController extends Controller
             ['type' => 'Periodic Review Report', 'no_doc' => 'VAL-UV/PRR'],
             ['type' => 'Validation Study Protocol', 'no_doc' => 'VAL-UV/STP'],
             ['type' => 'Validation Study Report', 'no_doc' => 'VAL-UV/STR'],
+            ['type' => 'Monitoring Protocol', 'no_doc' => 'VAL-UV/MTP'],
+            ['type' => 'Monitoring Report', 'no_doc' => 'VAL-UV/MTR'],
         ],
         'room' => [
             ['type' => 'User Requirement Specification', 'no_doc' => ''],
@@ -158,7 +160,7 @@ class DocumentController extends Controller
         ],
         'process-mediafill' => [
             ['type' => 'Risk Assessment', 'no_doc' => 'VAL-VP/RSK'],
-            ['type' => 'Validation Protocal', 'no_doc' => 'VAL-VP/PVP'],
+            ['type' => 'Validation Protocol', 'no_doc' => 'VAL-VP/PVP'],
             ['type' => 'Validation Report', 'no_doc' => 'VAL-VP/PVR'],
             ['type' => 'Justification', 'no_doc' => 'VAL-VP/JUS'],
             ['type' => 'Addendum', 'no_doc' => 'VAL-VP/ADD'],
@@ -168,7 +170,7 @@ class DocumentController extends Controller
         ],
         'cleaning' => [
             ['type' => 'Risk Assessment', 'no_doc' => 'VAL-CL/RSK'],
-            ['type' => 'Validation Protocal', 'no_doc' => 'VAL-CL/CLP'],
+            ['type' => 'Validation Protocol', 'no_doc' => 'VAL-CL/CLP'],
             ['type' => 'Validation Report', 'no_doc' => 'VAL-CL/CLR'],
             ['type' => 'Justification', 'no_doc' => 'VAL-CL/JUS'],
             ['type' => 'Addendum', 'no_doc' => 'VAL-CL/ADD'],
@@ -178,7 +180,7 @@ class DocumentController extends Controller
         ],
         'analytical-method' => [
             ['type' => 'Risk Assessment', 'no_doc' => 'VAL-MC/RSK'],
-            ['type' => 'Validation Protocal', 'no_doc' => 'VAL-MC/MCP'],
+            ['type' => 'Validation Protocol', 'no_doc' => 'VAL-MC/MCP'],
             ['type' => 'Validation Report', 'no_doc' => 'VAL-MC/MCR'],
             ['type' => 'Justification', 'no_doc' => 'VAL-MC/JUS'],
             ['type' => 'Addendum', 'no_doc' => 'VAL-MC/ADD'],

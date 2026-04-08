@@ -364,10 +364,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Information Technology': 'IT'
                 };
                 const departmentValue = departmentMapping[data.data.Departemen] || data.data.Departemen;
+                // Jika department = "QC", building diambil dari nilai department
+                const buildingValue = departmentValue === 'QC' ? 'QC' : (data.data.Building || '').trim();
                 // Isi form
                 $('#equipmentName').val(data.data.EquipmentName || '').prop('readonly', true);
-                $('select[name="building"]').val((data.data.Building || '').trim()).prop('disabled', true);
-                 $('select[name="department"]').val(departmentValue).prop('disabled', true);
+                $('select[name="building"]').val(buildingValue).prop('disabled', false);
+                $('select[name="department"]').val(departmentValue).prop('disabled', true);
                 $('#roomName').val(data.data.RoomName || '').prop('readonly', true);
                 $('#roomNumber').val(data.data.RoomNumber || '').prop('readonly', true);
                 $('#brand').val(data.data.Brand || '').prop('readonly', true);

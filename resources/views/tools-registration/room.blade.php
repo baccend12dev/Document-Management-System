@@ -154,29 +154,6 @@
                     <input type="hidden" name="equipment_name" value="">    
 
                     <div class="row">
-                        <!-- <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-semibold">Equipment ID <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="equipment_id" id="equipmentId"
-                                        placeholder="e.g., QA-D-MC-02" required>
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-info" id="checkEquipmentIdBtn">
-                                            Check
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-                        <!-- <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-semibold">Equipment Name <span
-                                        class="text-danger"></span></label>
-                                <input type="text" class="form-control" name="equipment_name" id="equipmentName"
-                                    placeholder="e.g., HVAC System" required>
-                            </div>
-                        </div> -->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-semibold">Building</label>
@@ -236,13 +213,15 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="font-weight-semibold">Serice Area</label>
-                                <select class="form-control" name="service_area" id="serviceArea">
-                                    <option value="">Select Service Area</option>
+                                <label class="font-weight-semibold">Service Area</label>
+                                <!-- Hidden input yang akan dikirim ke server (nilai dipisah ;) -->
+                                <input type="hidden" name="service_area" id="serviceAreaHidden">
+                                <select class="form-control" id="serviceArea" multiple="multiple">
                                     @foreach ($serviceAreas as $serviceArea)
                                         <option value="{{ $serviceArea->service_area }}">{{ $serviceArea->service_area }}</option>
                                     @endforeach
                                 </select>
+                                <small class="text-muted">Pilih satu atau beberapa Service Area.</small>
                             </div>
                         </div>
                     <table style="border: 2px solid black; padding: 2px;" id="roomsTable">
@@ -292,109 +271,77 @@ document.addEventListener('DOMContentLoaded', function() {
 @endif
 
 @endsection
-
 @push('scripts')
 <script>
     $(document).ready(function() {
+        // Multi-select Service Area dengan Select2
         $('#serviceArea').select2({
-        tags: true,              // memungkinkan input baru
-        placeholder: "Select or type Service Area",
-        allowClear: true,        // bisa hapus pilihan
-        width: '100%'            // biar menyesuaikan form
-    });
+            placeholder: "Pilih Service Area",
+            allowClear: true,
+            width: '100%'
+        });
+
         $('#location').select2({
-        tags: true,              // memungkinkan input baru
-        placeholder: "Select or type Service Area",
-        allowClear: true,        // bisa hapus pilihan
-        width: '100%'            // biar menyesuaikan form
-    });        
+            tags: true,
+            placeholder: "Select or type Location",
+            allowClear: true,
+            width: '100%'
+        });
 
+        // Sync hidden input & load rooms setiap kali pilihan berubah
+        $('#serviceArea').on('change', function() {
+            const selected = $(this).val() || [];
 
-    $('#checkEquipmentIdBtn').click(function() {
-        const equipmentId = $('input[name="equipment_id"]').val().trim();
-        if (!equipmentId) return alert('Please enter Equipment ID first.');
+            // Gabung dengan ; untuk disimpan ke DB
+            $('#serviceAreaHidden').val(selected.join(';'));
 
-        $.get(`/api/equipment/check-id?equipment_id=${equipmentId}`, function(data) {
-            if (data.success && data.data) {
-                // console.log(data);
-                const departmentMapping = {
-                    'Technical and Maintenance': 'TM',
-                    'Production': 'PR',
-                    'Logistic': 'LG',
-                    'Research and Development': 'RD',
-                    'Quality Assurance': 'QA',
-                    'Quality Control': 'QC',
-                    'Information Technology': 'IT'
-                };
-                const departmentValue = departmentMapping[data.data.Departemen] || data.data.Departemen;
-                // Isi form
-                $('#equipmentName').val(data.data.EquipmentName || '').prop('readonly', true);
-                $('select[name="building"]').val(data.data.Building || '').prop('disabled', true);
-                 $('select[name="department"]').val(departmentValue).prop('disabled', true);
-                $('#roomName').val(data.data.RoomName || '').prop('readonly', true);
-                $('#roomNumber').val(data.data.RoomNumber || '').prop('readonly', true);
-                $('#brand').val(data.data.Brand || '').prop('readonly', true);
-                $('#type').val(data.data.Type || '').prop('readonly', true);
-                $('#serialNumber').val(data.data.SerialNumber || '').prop('readonly', true);
-            } else {
-                // Reset form
-                $('#equipmentName, #brand, #type, #serialNumber, #roomName, #roomNumber').val('').prop('readonly', false);
-                $('select[name="building"]').val('').prop('disabled', false);
-                $('select[name="department"]').val('').prop('disabled', false);
-                alert('Equipment not found.');
+            if (selected.length === 0) {
+                $('#roomsTable tbody').html(`
+                    <tr><td colspan="3" class="text-center text-muted">Select a Service Area first</td></tr>
+                `);
+                return;
             }
-        }).fail(function() {
-            alert('Error checking equipment ID.');
+
+            // show loading
+            $('#roomsTable tbody').html(`
+                <tr><td colspan="3" class="text-center text-info">Loading...</td></tr>
+            `);
+
+            $.ajax({
+                url: '/get-rooms',
+                type: 'GET',
+                // Kirim array; Laravel/server bisa terima serviceArea[]
+                data: { serviceArea: selected },
+                success: function(data) {
+                    let rows = '';
+                    if (data.length === 0) {
+                        rows = `<tr><td colspan="3" class="text-center text-muted">No rooms found</td></tr>`;
+                    } else {
+                        data.forEach(function(room) {
+                            rows += `
+                                <tr>
+                                    <td>${room.room_name}</td>
+                                    <td>${room.room_code}</td>
+                                    <td>${room.ahu_code}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    $('#roomsTable tbody').html(rows);
+                },
+                error: function() {
+                    $('#roomsTable tbody').html(`
+                        <tr><td colspan="3" class="text-center text-danger">Failed to load rooms.</td></tr>
+                    `);
+                }
+            });
+        });
+
+        // Pastikan hidden input terisi sebelum form disubmit
+        $('form').on('submit', function() {
+            const selected = $('#serviceArea').val() || [];
+            $('#serviceAreaHidden').val(selected.join(';'));
         });
     });
-});
-$('form').on('submit', function() {
-    $('select[name="building"]').prop('disabled', false);
-     $('select[name="department"]').prop('disabled', false);
-});
-
-
-$('#serviceArea').on('change', function() {
-
-    let area = $(this).val();
-
-    // show loading
-    $('#roomsTable tbody').html(`
-        <tr>
-            <td colspan="3" class="text-center text-info">Loading...</td>
-        </tr>
-    `);
-
-    $.ajax({
-        url: '/get-rooms',
-        type: 'GET',
-        data: { serviceArea: area },
-        success: function(data) {
-
-            let rows = '';
-
-            if(data.length === 0) {
-                rows = `
-                    <tr>
-                        <td colspan="3" class="text-center text-muted">No rooms found</td>
-                    </tr>
-                `;
-            } else {
-                data.forEach(function(room) {
-                    rows += `
-                        <tr>
-                            <td>${room.room_name}</td>
-                            <td>${room.room_code}</td>
-                            <td>${room.ahu_code}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            $('#roomsTable tbody').html(rows);
-        }
-    });
-
-});
 </script>
 @endpush

@@ -82,7 +82,21 @@ class ToolsRegistrationController extends Controller
 
 public function getRooms(Request $request)
 {
-    $rooms = AhuRoom::where('service_area', $request->serviceArea)
+    $serviceArea = $request->input('serviceArea');
+
+    // Bisa array (multi-select) atau string (single)
+    if (!is_array($serviceArea)) {
+        $serviceArea = [$serviceArea];
+    }
+
+    // Hapus value kosong
+    $serviceArea = array_filter($serviceArea);
+
+    if (empty($serviceArea)) {
+        return response()->json([]);
+    }
+
+    $rooms = AhuRoom::whereIn('service_area', $serviceArea)
         ->select('room_name', 'room_code', 'ahu_code')
         ->distinct()
         ->orderBy('ahu_code')

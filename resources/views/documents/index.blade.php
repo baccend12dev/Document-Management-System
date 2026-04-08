@@ -647,12 +647,15 @@
                                 <label class="font-weight-bold small mb-2">
                                     Serial Number <span class="text-danger">*</span>
                                 </label>
-                                <select name="serialnumber" id="serial_number">
-                                    @for ($i = 0; $i <= 100; $i++) <option value="{{ sprintf('%03d', $i) }}">
-                                        {{ sprintf('%03d', $i) }}</option>
-                                        @endfor
+                                <select class="form-control select2" name="serialnumber" id="serial_number" required>
+                                    <option value="">-- Select --</option>
+                                    @for ($i = 0; $i <= 100; $i++)
+                                        <option value="{{ sprintf('%03d', $i) }}">
+                                            {{ sprintf('%03d', $i) }}
+                                        </option>
+                                    @endfor
                                 </select>
-                            </div>
+                            </div>  
                         </div>
                     </div>
                     <div class="row">
@@ -687,24 +690,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-bold small mb-2">
-                                    Model & Type <span class="text-danger">*</span>
+                                    Model & Type 
                                 </label>
                                 <input type="text" class="form-control" name="modelType" id="documentTitle"
                                     placeholder="Enter Model & Type">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="font-weight-bold small mb-2">
-                                    Subject
-                                </label>
-                                <select class="form-control" name="subject" id="subject">
-                                    <option value="">Select Subject</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-bold small mb-2">
@@ -714,6 +705,11 @@
                                     required>
                             </div>
                         </div>
+                    </div>
+                    <!-- hidden input -->
+                    <input type="hidden" name="subject" id="subject" value="">
+                    <div class="row">
+                        
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="font-weight-bold small mb-2">
