@@ -66,7 +66,7 @@
         <tr>
             <td colspan="2" class="header-title">OTTO</td>
             <td colspan="8" class="header-subtitle">
-                PROCESS VALIDATION  MEDIA FILL REPORT
+                Process Validation & Media Fill Report					
             </td>
         </tr>
         <tr>
@@ -101,8 +101,10 @@
 
         
     </table>
-            (User Name)
-            (Printed Date)
+               <div class="footer" style="margin-top: 20px;">
+        <strong>Printed by:</strong> {{ $userName }} |  
+        <strong>Print date:</strong> {{ date('d M Y') }}
+    </div>
     <div class="no-print" style="margin-top: 20px;">
         <button onclick="window.print()">🖨️ Print Page</button>
     </div>

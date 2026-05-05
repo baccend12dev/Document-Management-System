@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cleaning Validation Report</title>
+    <title>Equipment Qualification Report</title>
     <style>
         body {
             font-family: "Arial", sans-serif;
@@ -20,7 +20,7 @@
         .report-table td {
             border: 1px solid #000;
             padding: 4px 6px;
-            text-align: center;
+            text-align: left;
         }
 
         .report-table th {
@@ -31,13 +31,13 @@
 
         .header-title {
             font-size: 35px;
-            text-align: center;
+            text-align: center!important;
             vertical-align: middle;
             font-family: "Tw Cen MT Condensed", "Tw Cen MT", "Arial Narrow", Arial, sans-serif;
         }
 
         .header-subtitle {
-            text-align: center;
+            text-align: center!important;
             font-weight: bold;
             font-size: 15px;
 
@@ -81,50 +81,46 @@
     <table class="report-table">
         <tr>
             <td colspan="2" class="header-title">OTTO</td>
-            <td colspan="12" class="header-subtitle">
-                Cleaning Validation Report
+            <td colspan="9" class="header-subtitle">
+                {{ strtoupper($category) }} QUALIFICATION REPORT
             </td>
         </tr>
         <tr>
             <!-- header kosong baris kedua -->
         </tr>
         <tr>
-            <th style="width: 3%;">NO</th>
-            <th style="width: 15%;">Product Name</th>
-            <th style="width: 10%;">Product Code</th>
-            <th style="width: 10%;">Equipment Name</th>
-            <th style="width: 8%;">Equipment ID</th>
-            <th style="width: 15%;">Room No</th>
-            <th style="width: 12%;">Room Name</th>
-            <th style="width: 5%;">No Batch</th>
-            <th style="width: 10%;">Active Subtance</th>
-            <th style="width: 10%;">Document No</th>
-            <th style="width: 10%;">Document Type</th>
-            <th style="width: 10%;">Rev</th>
-            <th style="width: 10%;">Aprove Date</th>
-            <th style="width: 10%;">Remark</th>
+            <th>No</th>
+            <th>Document No</th>
+            <th>Revision</th>
+            <th>Approve Date</th>
+            <th>Next Requalification</th>
+            <th>Service Area</th>
+            <th>Location</th>
+            <th>AHU</th>
+            <th>Room No</th>
+            <th>Room Name</th>
+            <th>Room Class</th>
         </tr>
-        @foreach($documents as $index => $doc)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td style="text-align: left; padding-left: 10px;">{{ $doc->equipment ? $doc->equipment->product_name : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->product_code : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->equipment_name : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->equipment_id : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->roomNumber : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->roomName : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->no_batch :'' }}</td> 
-                <td>{{ $doc->equipment ? $doc->equipment->active_subtance : '' }}</td>
-                <td>{{ $doc->doc_number }}</td>
-                <td>{{ $doc->document_type }}</td>
-                <td>{{ $doc->revision_number ? $doc->revision_number : 'N/A' }}</td>
-                <td>{{ date('d/m/Y', strtotime($doc->approved_date)) }}</td>
-                <td>{{ $doc->remarks}}</td>
-            </tr>
+        @foreach($documents as $document)
+        <tr>
+            <td>{{ $loop->iteration }}</td>
+            <td>{{ $document->doc_number }}</td>
+            <td>{{ $document->revision_number }}</td>
+            <td>{{ $document->approved_date }}</td>
+            <td>{{ $document->next_review != null ? $document->next_review : 'N/A' }}</td>
+
+            <td>{{ $document->equipment->roomMaster->pluck('service_area')->unique()->implode(', ') }}</td>
+            <td>{!! $document->equipment->roomMaster->pluck('location')->unique()->implode('<br>') !!}</td>
+            <td>{!! $document->equipment->roomMaster->pluck('ahu_code')->unique()->implode('<br>') !!}</td>
+            <td>{!! $document->equipment->roomMaster->pluck('room_code')->implode('<br>') !!}</td>
+            <td>{!! $document->equipment->roomMaster->pluck('room_name')->implode('<br>') !!}</td>
+            <td>{!! $document->equipment->roomMaster->pluck('room_class')->implode('<br>') !!}</td>
+        </tr>
         @endforeach
 
         
     </table>
+            
     <div class="footer" style="margin-top: 20px;">
         <strong>Printed by:</strong> {{ $userName }} |  
         <strong>Print date:</strong> {{ date('d M Y') }}

@@ -328,7 +328,7 @@ public function checkEquipmentId(Request $request)
             // Get products from process-mediafill that use this active substance
             $products = EquipmentQualification::where('sub_menu', 'process-mediafill')
                 ->where('active_subtance', $activeSubstance)
-                ->select('id', 'product_code', 'product_name', 'active_subtance', 'building')
+                ->select('id', 'product_code', 'product_name', 'active_subtance', 'building','no_batch')
                 ->get();
 
             return response()->json([

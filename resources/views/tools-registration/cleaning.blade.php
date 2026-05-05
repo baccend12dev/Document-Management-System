@@ -233,6 +233,7 @@
                                             <th>No</th>
                                             <th>Product Code</th>
                                             <th>Product Name</th>
+                                            <th>No Batch</th>
                                             <th>
                                                 <input type="checkbox" id="selectAll"> Select All
                                             </th>
@@ -252,6 +253,7 @@
                     <!-- Hidden input to store selected product codes as comma-separated string -->
                      <input type="hidden" name="product_name" id="productNameInput" value="">
                     <input type="hidden" name="product_code" id="productCodeInput" value="">
+                    <input type="hidden" name="no_batch" id="noBatchInput" value="">
                     <div class="mt-4">
                         <button type="submit" class="btn-custom btn-primary-custom">
                             <i class="fas fa-save mr-2"></i> Save
@@ -317,6 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'GET',
                 data: { active_substance: activeSubstance },
                 success: function(response) {
+                    // console.log(response);
                     if (response.success && response.data.length > 0) {
                         let rows = '';
                         response.data.forEach(function(product, index) {
@@ -325,11 +328,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <td>${index + 1}</td>
                                     <td>${product.product_code || '-'}</td>
                                     <td>${product.product_name || '-'}</td>
+                                    <td>${product.no_batch || '-'}</td>
                                     <td class="text-center">
                                         <input type="checkbox" name="selected_products[]" 
                                                value="${product.product_code}" 
                                                data-product-code="${product.product_code}"
                                                data-product-name="${product.product_name}"
+                                               data-no-batch="${product.no_batch}"
                                                class="product-checkbox">
                                     </td>
                                 </tr>
@@ -375,14 +380,19 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#cleaningForm').on('submit', function(e) {
             const selectedProductCodes = [];
             const selectedProductNames = [];
+            const selectedNoBatches = [];
             $('.product-checkbox:checked').each(function() {
                 const productCode = $(this).val();
                 const productName = $(this).data('product-name');
+                const noBatch = $(this).data('no-batch');
                 if (productCode) {
                     selectedProductCodes.push(productCode);
                 }
                 if (productName) {
                     selectedProductNames.push(productName);
+                }
+                if (noBatch) {
+                    selectedNoBatches.push(noBatch);
                 }
             });
 
@@ -399,6 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             $('#productCodeInput').val(selectedProductCodes.join(', '));
             $('#productNameInput').val(selectedProductNames.join(', '));
+            $('#noBatchInput').val(selectedNoBatches.join(', '));
         });
     });
 </script>

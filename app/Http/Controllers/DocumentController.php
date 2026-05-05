@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use App\DocumentHistory;
 use App\Exports\DocumentsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 
 class DocumentController extends Controller
 {
@@ -732,7 +733,7 @@ class DocumentController extends Controller
     public function reportByDoc(Request $request)
     {
         // dd($request->all());
-        $query = DocumentEquipment::with('equipment');
+        $query = DocumentEquipment::with('equipment.roomMaster');
         // Filter by Category
         if ($request->has('category') && $request->category != '') {
             // mapping kategori ke sub_menu yang termasuk di dalamnya          
@@ -776,7 +777,7 @@ class DocumentController extends Controller
         //session for print
         session(['reportByDocFilters' => $query->get()]);
         $documents = $query->orderBy('id', 'desc')->paginate(10);
-        // dd($documents);
+
         return view('documents.showbyDoc', compact('documents'));
     }
     public function reportDocument(Request $request)
@@ -784,20 +785,24 @@ class DocumentController extends Controller
         // dd($request->all());
         $documents = session('reportByDocFilters', []);
         $category = $request->input('category');
-
+        $userName = Auth::user()->username;
+        
+        // dd($documents);
         // Use a single view for equipment-related categories
-        if (in_array($category, ['equipment', 'room', 'utility', 'computer'])) {
-            return view('reportLayout.equipment', compact('documents', 'category'));
+        if (in_array($category, ['equipment','utility', 'computer'])) {
+            return view('reportLayout.equipment', compact('documents', 'category','userName'));
         }
-
         // Other specific views
         if (in_array($category, ['process-mediafill', 'process-mediafil'])) {
-            return view('reportLayout.process-mediafil', compact('documents'));
+            return view('reportLayout.process-mediafil', compact('documents','userName'));
         } elseif ($category == 'cleaning') {
-            return view('reportLayout.cleaning', compact('documents'));
+            return view('reportLayout.cleaning', compact('documents','userName'));
         } elseif ($category == 'analytical-method') {
-            return view('reportLayout.analytical-method', compact('documents'));
-        } else {
+            return view('reportLayout.analytical-method', compact('documents','userName'));
+        } elseif ($category == 'room') {
+            return view('reportLayout.room', compact('documents','category','userName'));
+        } 
+        else {
             return redirect()->back()->with('error', 'Invalid category selected for report.');
         }
 
