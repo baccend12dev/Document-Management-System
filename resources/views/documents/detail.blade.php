@@ -503,8 +503,8 @@
                                     placeholder="Enter Model & Type">
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">Approve Date</label>
-                                <input type="date" id="approveDate" name="approvedate" class="form-control">
+                                <label class="font-weight-bold">Approve Date <span class="text-danger">*</span></label>
+                                <input type="date" id="approveDate" name="approvedate" class="form-control" required>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="font-weight-bold">Frequency Review</label>
@@ -640,11 +640,7 @@
                                 <label for="editApproveDate" class="font-weight-semibold">
                                     Approve Date <span class="text-danger">*</span>
                                 </label>
-                                <input type="date" 
-                                       name="approve_date" 
-                                       id="editApproveDate" 
-                                       class="form-control"
-                                       required>
+                                <input type="date" name="approve_date" id="editApproveDate" class="form-control" required>
                             </div>
                         </div>
                     </div>
@@ -800,29 +796,31 @@
                 const serialNumber = $('#serial_number').val();
                 const selectedDocType = $('#documentType option:selected');
 
-                // Ambil building & department dari PHP (Blade)
                 const building = "{{ strtoupper(substr($document->building, 0, 3)) }}";
-                const dept =
-                    "{{ strtoupper(substr($document->department, 0, 3)) }}{{ strtoupper(substr($document->dosageCode, 0, 3)) }}";
 
-                // Jika belum pilih document type
+                const dept = "{{ strtoupper(substr($document->department, 0, 3)) }}{{ strtoupper(substr($document->dosageCode, 0, 3)) }}";
+
                 if (!selectedDocType.val()) {
                     documentNumberElement.val('SELECT TYPE DOC ' + serialNumber);
                     return;
                 }
 
-                // Ambil no_doc dari document type
                 const noDoc = selectedDocType.data('no_doc');
+
                 if (!noDoc) {
                     documentNumberElement.prop('readonly', false);
-                    documentNumberElement.val('/' + serialNumber);
+                    documentNumberElement.val(serialNumber);
                     return;
                 }
 
                 documentNumberElement.prop('readonly', true);
 
-                // Bentuk format nomor dokumen
-                const newDocumentNumber = `${noDoc}/${building}/${dept}/${serialNumber}`;
+                const newDocumentNumber = [
+                    noDoc,
+                    building,
+                    dept,
+                    serialNumber
+                ].filter(item => item && item.trim() !== '').join('/');
 
                 documentNumberElement.val(newDocumentNumber);
             }

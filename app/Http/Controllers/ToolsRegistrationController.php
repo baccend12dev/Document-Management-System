@@ -121,40 +121,40 @@ public function getRooms(Request $request)
 
 
 
-//get data from tools master dari calibration tools
-// Controller function
-public function checkEquipmentId(Request $request)
-{
-    try {
-         $equipmentId = $request->input('equipment_id');
-        
-        // Cari data equipment berdasarkan id_column atau kode
-        $equipment = DB::table('QA_calibrasi_tools')
-            ->where('IdentityNumber', $equipmentId)
-            ->first();
-        
-        if ($equipment) {
-            return response()->json([
-                'success' => true,
-                'data' => $equipment,
-                'message' => 'Equipment found'
-            ]);
-        } else {
-    return response()->json([
-        'success' => true,  // Tetap success: true
-        'exists' => false,  // Tapi exists: false
-        'data' => null,
-        'message' => 'Equipment not found'
-            ]); // Hapus status 404
-        }
-        
-    } catch (\Exception $e) {
+    //get data from tools master dari calibration tools
+    // Controller function
+    public function checkEquipmentId(Request $request)
+    {
+        try {
+            $equipmentId = $request->input('equipment_id');
+            
+            // Cari data equipment berdasarkan id_column atau kode
+            $equipment = DB::table('QA_calibrasi_tools')
+                ->where('IdentityNumber', $equipmentId)
+                ->first();
+            
+            if ($equipment) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $equipment,
+                    'message' => 'Equipment found'
+                ]);
+            } else {
         return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
+            'success' => true,  // Tetap success: true
+            'exists' => false,  // Tapi exists: false
+            'data' => null,
+            'message' => 'Equipment not found'
+                ]); // Hapus status 404
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
-}
 
     // Equipment
     public function storeEquipment(Request $request)
@@ -283,6 +283,7 @@ public function checkEquipmentId(Request $request)
                     'no_batch' => $productData['no_batch'],
                     'sub_menu' => $subMenu,
                     'created_by' => auth()->user()->username,
+                    'equipment_name'=>''
                 ]);
 
                 $savedCount++;

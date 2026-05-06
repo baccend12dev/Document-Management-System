@@ -18,6 +18,10 @@ class DocumentEquipment extends Model
     {
         return $this->belongsTo(EquipmentQualification::class, 'tools_id');
     }
+    public function utility()
+    {
+        return $this->belongsTo(ModelUtilityMasterlist::class, 'tools_id', 'id');
+    }
 
 // === Tambahkan audit trail langsung di model ===
     use AuditTrail;

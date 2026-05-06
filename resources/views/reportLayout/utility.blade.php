@@ -81,20 +81,20 @@
     <table class="report-table">
         <tr>
             <td colspan="2" class="header-title">OTTO</td>
-            <td colspan="8" class="header-subtitle">
+            <td colspan="12" class="header-subtitle">
                 {{ strtoupper($category) }} QUALIFICATION REPORT
             </td>
         </tr>
         <tr>
-            <!-- header kosong baris kedua -->
-        </tr>
-        <tr>
             <th >NO</th>
-            <th > Name</th>
-            <th >Equipment ID</th>
-            <!-- <th style="width: 10%;">Location</th> -->
-            <th >Room NO</th>
+            <th >Subject</th>
+            <th >System</th>
+            <th >Model</th>
+            <th >Building</th>
+            <th >Location</th>
+            <th >Service Area</th>
             <th >Room Name</th>
+            <th >Room Number</th>
             <th >Document Number</th>
             <th >Document Type</th>
             <th >Rev</th>
@@ -104,17 +104,14 @@
         @foreach($documents as $index => $doc)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>
-                    @if ($category == 'computer')
-                        {{ $doc->equipment ? $doc->equipment->systemName : 'N/A' }}
-                    @else
-                        {{ $doc->equipment ? $doc->equipment->equipment_name : 'N/A' }}
-                    @endif
-                </td>
-                <td>{{ $doc->equipment ? $doc->equipment->equipment_id : 'N/A' }}</td>
-                <!-- <td>{{ $doc->equipment ? $doc->equipment->location : 'N/A' }}</td> -->
-                <td>{{ $doc->equipment ? $doc->equipment->roomNumber : 'N/A' }}</td>
-                <td>{{ $doc->equipment ? $doc->equipment->roomName : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->subject : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->system : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->model : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->building : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->location : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->servicearea : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->roomName : 'N/A' }}</td>
+                <td>{{ $doc->utility ? $doc->utility->roomNumber : 'N/A' }}</td>
                 <td>{{ $doc->doc_number }}</td>
                 <td>{{ $doc->document_type }}</td>
                 <td>{{ $doc->revision_number ? $doc->revision_number : 'N/A' }}</td>

@@ -714,7 +714,6 @@ class DocumentController extends Controller
             return view('reportLayout.duedateReport', compact('documents', 'duedateSchedule'));
         }
 
-
         // dd($documents);
         return view('documents.duedateschedule', compact('documents', 'duedateSchedule', 'showRoomfields', 'countOverdue', 'countWarning', 'countNormal', 'countFuture'));
     }
@@ -733,7 +732,7 @@ class DocumentController extends Controller
     public function reportByDoc(Request $request)
     {
         // dd($request->all());
-        $query = DocumentEquipment::with('equipment.roomMaster');
+        $query = DocumentEquipment::with('equipment.roomMaster', 'utility');
         // Filter by Category
         if ($request->has('category') && $request->category != '') {
             // mapping kategori ke sub_menu yang termasuk di dalamnya          
@@ -777,7 +776,7 @@ class DocumentController extends Controller
         //session for print
         session(['reportByDocFilters' => $query->get()]);
         $documents = $query->orderBy('id', 'desc')->paginate(10);
-
+        // dd($documents);
         return view('documents.showbyDoc', compact('documents'));
     }
     public function reportDocument(Request $request)
@@ -789,7 +788,7 @@ class DocumentController extends Controller
         
         // dd($documents);
         // Use a single view for equipment-related categories
-        if (in_array($category, ['equipment','utility', 'computer'])) {
+        if (in_array($category, ['equipment', 'computer'])) {
             return view('reportLayout.equipment', compact('documents', 'category','userName'));
         }
         // Other specific views
@@ -799,6 +798,8 @@ class DocumentController extends Controller
             return view('reportLayout.cleaning', compact('documents','userName'));
         } elseif ($category == 'analytical-method') {
             return view('reportLayout.analytical-method', compact('documents','userName'));
+        } elseif ($category == 'utility'){
+            return view('reportLayout.utility', compact('documents','category','userName'));
         } elseif ($category == 'room') {
             return view('reportLayout.room', compact('documents','category','userName'));
         } 

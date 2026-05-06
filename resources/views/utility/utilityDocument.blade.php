@@ -558,8 +558,8 @@
                                         placeholder="Enter Model & Type">
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="font-weight-bold">Approve Date</label>
-                                    <input type="date" id="approveDate" name="approvedate" class="form-control">
+                                    <label class="font-weight-bold">Approve Date <span class="text-danger">*</span></label>
+                                    <input type="date" id="approveDate" name="approvedate" class="form-control" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label class="font-weight-bold">Frequency Review</label>
