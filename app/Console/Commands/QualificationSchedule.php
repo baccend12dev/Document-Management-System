@@ -29,51 +29,64 @@ class QualificationSchedule extends Command
      */
     public function handle()
     {
-        $currentMonth = Carbon::now()->format('Y-m');
-        $monthlyLink = 'http://qa-kkv.ottoportal.info:8080/documents/scedule?start_month=' . $currentMonth . '&end_month=' . $currentMonth . '&print=1';
-        $warningLink = 'http://qa-kkv.ottoportal.info:8080/documents/scedule?priority=warning&print=1';
-        $overdueLink = 'http://qa-kkv.ottoportal.info:8080/documents/scedule?priority=overdue&print=1';
+        $now = Carbon::now();
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
 
-        $links = [];
+        // 1. Get documents that have a review date in this month
+        $documentsThisMonth = \App\DocumentEquipment::whereIn('document_type', [
+            'Performance Qualification Report',
+            'Operational Qualification Report',
+            'Periodic Review',
+            'Validation Report'
+        ])
+        ->whereNotNull('next_review')
+        ->whereBetween('next_review', [$startOfMonth, $endOfMonth])
+        ->get();
 
-        // Tambahkan link overdue di awal
-        $links = [
-            'Qualification Overdue' => $overdueLink,
-            'Qualification This Month' => $monthlyLink,
-            'Qualification 1 Week' => $warningLink,
-        ];
-
-        $nonEmptyLinks = [];
-
-        foreach ($links as $name => $url) {
-            if ($this->getCount($url) > 0) {
-                $nonEmptyLinks[$name] = $url;
-            }
-        }
-
-        // Jika semua kosong → jangan kirim email
-        if (empty($nonEmptyLinks)) {
-            $this->info("Semua data kosong, email tidak dikirim.");
+        if ($documentsThisMonth->isEmpty()) {
+            $this->info("Tidak ada dokumen yang jatuh tempo bulan ini, email tidak dikirim.");
             return;
         }
 
-        // Ambil email admin
-        $emails = User::where('role', 'admin, technician, supervisor')->pluck('email')->toArray();
+        $documentIds = $documentsThisMonth->pluck('id')->toArray();
 
-        if (!empty($emails)) {
-            Mail::to($emails)->send(new QualificationScheduleMailAutoMail($nonEmptyLinks));
-            $this->info("Notifikasi Qualification berhasil dikirim dengan " . count($nonEmptyLinks) . " link.");
+        // 2. Get PIC mappings for these documents
+        $picDocuments = \App\PicDocument::with(['pic', 'ccPic', 'document.equipment', 'document.utility'])
+            ->whereIn('document_id', $documentIds)
+            ->get();
+
+        if ($picDocuments->isEmpty()) {
+            $this->info("Tidak ada PIC yang terkait dengan dokumen yang jatuh tempo.");
+            return;
         }
 
-    }
+        // 3. Group by main PIC
+        $groupedByPic = $picDocuments->groupBy('pic_id');
 
-    private function getCount($url)
-    {
-        $json = @file_get_contents($url . '&count=1');
-        if (!$json) return 0;
+        // 4. Send email per PIC
+        foreach ($groupedByPic as $picId => $picDocs) {
+            $mainPic = $picDocs->first()->pic;
+            if (!$mainPic || !$mainPic->email) continue;
 
-        $data = json_decode($json, true);
-        return $data['total'] ? $data['total'] : 0;
+            $ccEmails = [];
+            foreach ($picDocs as $pd) {
+                if ($pd->ccPic && $pd->ccPic->email) {
+                    $ccEmails[] = $pd->ccPic->email;
+                }
+            }
+            $ccEmails = array_unique($ccEmails);
+
+            // Send email
+            $mail = Mail::to($mainPic->email);
+            if (!empty($ccEmails)) {
+                $mail->cc($ccEmails);
+            }
+            
+            $mail->send(new QualificationScheduleMailAutoMail($mainPic->name, $picDocs));
+        }
+
+        $this->info("Notifikasi Qualification bulan ini berhasil dikirim ke " . $groupedByPic->count() . " PIC.");
     }
 
 

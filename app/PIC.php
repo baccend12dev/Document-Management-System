@@ -12,4 +12,8 @@ class PIC extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    public function picDocuments()
+    {
+        return $this->hasMany(PicDocument::class, 'pic_id');
+    }
 }

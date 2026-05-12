@@ -9,11 +9,13 @@ class QualificationScheduleMailAutoMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $links;
+    public $picName;
+    public $documents;
 
-    public function __construct($links)
+    public function __construct($picName, $documents)
     {
-        $this->links = $links;
+        $this->picName = $picName;
+        $this->documents = $documents;
     }
 
     public function build()

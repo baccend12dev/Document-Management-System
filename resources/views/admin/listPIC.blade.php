@@ -19,7 +19,10 @@
                             </button>
                         </div>
                         <div>
-                            <!-- Form Pencarian atau Filter Bisa Ditambahkan Di Sini -->
+                            <form action="{{ route('admin.list-pic') }}" method="GET" class="d-flex">
+                                <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Cari Nama PIC / No Dokumen..." value="{{ request('search') }}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Cari</button>
+                            </form>
                         </div>
                     </div>
 
@@ -38,13 +41,19 @@
                             </thead>
                             <tbody>
                                 @forelse($pics as $pic)
-                                <tr>
-                                    <th scope="row">{{ $loop->iteration }}</th>
+                                <tr data-toggle="collapse" data-target="#collapseDocs{{ $pic->id }}" aria-expanded="false" aria-controls="collapseDocs{{ $pic->id }}" style="cursor: pointer;">
+                                    <th scope="row">
+                                        <i class="fas fa-chevron-down text-muted me-1"></i>
+                                        {{ $loop->iteration }}
+                                    </th>
                                     <td>{{ $pic->name }}</td>
                                     <td>{{ $pic->email }}</td>
                                     <td>{{ $pic->department }}</td>
                                     <td>{{ $pic->section }}</td>
                                     <td>
+                                        <a href="{{ route('pic.add-document', $pic->id) }}" class="btn btn-sm btn-outline-primary me-1" title="Tambah Dokumen">
+                                            <i class="fas fa-plus"></i>
+                                        </a>
                                         <button class="btn btn-sm btn-outline-warning me-1">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -55,6 +64,51 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+                                    </td>
+                                </tr>
+                                <!-- Nested Table for Documents -->
+                                <tr id="collapseDocs{{ $pic->id }}" class="collapse bg-light">
+                                    <td colspan="6" class="p-3">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-0">
+                                                <thead class="table-secondary">
+                                                    <tr>
+                                                        <th scope="col">#</th>
+                                                        <th scope="col">No Dokumen</th>
+                                                        <th scope="col">Tipe Dokumen</th>
+                                                        <th scope="col">Next Review Date</th>
+                                                        <th scope="col">Kategori</th>
+                                                        <th scope="col">CC PIC</th>
+                                                        <th scope="col">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($pic->picDocuments as $picDoc)
+                                                    <tr>
+                                                        <th scope="row">{{ $loop->iteration }}</th>
+                                                        <td>{{ $picDoc->document ? $picDoc->document->doc_number : 'N/A' }}</td>
+                                                        <td>{{ $picDoc->document ? $picDoc->document->document_type : 'N/A' }}</td>
+                                                        <td>{{ $picDoc->document ? $picDoc->document->next_review : 'N/A' }}</td>
+                                                        <td>{{ $picDoc->document ? $picDoc->document->sub_menu : 'N/A' }}</td>
+                                                        <td>{{ $picDoc->ccPic ? $picDoc->ccPic->name : '-' }}</td>
+                                                        <td>
+                                                            <form action="{{ route('pic.documents.destroy', [$pic->id, $picDoc->id]) }}" method="POST" style="display:inline;">
+                                                                {{ csrf_field() }}
+                                                                {{ method_field('DELETE') }}
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="7" class="text-center text-muted">Belum ada dokumen yang ditugaskan ke PIC ini.</td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
@@ -104,61 +158,17 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="pic_department" class="form-label">Departemen</label>
-                                <select class="form-select" id="pic_department" name="department" required>
-                                    <option value="">Pilih Departemen</option>
-                                    <option value="QA">Quality Assurance</option>
-                                    <option value="QC">Quality Control</option>
-                                    <option value="PR">Production</option>
-                                    <option value="TM">Technical</option>
-                                    <option value="LG">Logistics</option>
-                                    <option value="RD">Research and Development</option>
-                                    <option value="IT">Information Technology</option>
-                                </select>
+                                <input type="text" class="form-control" id="pic_department" name="department" placeholder="Masukkan Departemen" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="pic_section" class="form-label">Section</label>
-                                <select class="form-select" id="pic_section" name="section" required>
-                                    <option value="">Pilih Section</option>
-                                    <option value="Equipment">Equipment</option>
-                                    <option value="Utility">Utility</option>
-                                    <option value="Room Qualification">Room Qualification</option>
-                                    <option value="Computerized System">Computerized System</option>
-                                    <option value="Process Mediafill">Process Mediafill</option>
-                                    <option value="Cleaning Validation">Cleaning Validation</option>
-                                    <option value="Analytical Method">Analytical Method</option>
-                                </select>
+                                <label for="pic_section" class="form-label">Section (optional)</label>
+                                <input type="text" class="form-control" id="pic_section" name="section" placeholder="Masukkan Section">
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">List Tool</label>
-                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                            <table class="table table-bordered table-hover" id="toolListTable">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th width="5%">
-                                            <input type="checkbox" id="selectAllTools" class="form-check-input">
-                                        </th>
-                                        <th width="10%">No</th>
-                                        <th width="30%">Nama Tool</th>
-                                        <th width="25%">Kategori</th>
-                                        <th width="30%">Deskripsi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="toolListBody">
-                                    <!-- Data akan diisi melalui AJAX berdasarkan department dan section -->
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted">
-                                            Pilih Department dan Section untuk menampilkan list tool
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -170,107 +180,4 @@
 </div>
 @endsection
 
-@section('scripts')
-<script>
-$(document).ready(function() {
-    // Function untuk load tools berdasarkan department dan section
-    function loadTools() {
-        var department = $('#pic_department').val();
-        var section = $('#pic_section').val();
-        
-        // Cek apakah department dan section sudah dipilih
-        if (department && section) {
-            // Tampilkan loading
-            $('#toolListBody').html(`
-                <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        <i class="fas fa-spinner fa-spin"></i> Loading data...
-                    </td>
-                </tr>
-            `);
-            
-            // AJAX request
-            $.ajax({
-                url: '/api/tools/filter', // Sesuaikan dengan route Anda
-                method: 'GET',
-                data: {
-                    department: department,
-                    section: section
-                },
-                success: function(response) {
-                    if (response.data && response.data.length > 0) {
-                        let html = '';
-                        response.data.forEach((tool, index) => {
-                            html += `
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" name="tools[]" value="${tool.id}" class="form-check-input tool-checkbox">
-                                    </td>
-                                    <td>${index + 1}</td>
-                                    <td>${tool.name}</td>
-                                    <td>${tool.category}</td>
-                                    <td>${tool.description || '-'}</td>
-                                </tr>
-                            `;
-                        });
-                        $('#toolListBody').html(html);
-                    } else {
-                        $('#toolListBody').html(`
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">
-                                    Tidak ada tool untuk Department dan Section yang dipilih
-                                </td>
-                            </tr>
-                        `);
-                    }
-                },
-                error: function(xhr) {
-                    $('#toolListBody').html(`
-                        <tr>
-                            <td colspan="5" class="text-center text-danger">
-                                <i class="fas fa-exclamation-triangle"></i> Gagal memuat data
-                            </td>
-                        </tr>
-                    `);
-                }
-            });
-        } else {
-            // Reset tabel jika salah satu belum dipilih
-            $('#toolListBody').html(`
-                <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        Pilih Department dan Section untuk menampilkan list tool
-                    </td>
-                </tr>
-            `);
-        }
-        
-        // Reset checkbox select all
-        $('#selectAllTools').prop('checked', false);
-    }
-    
-    // Trigger load tools ketika department berubah
-    $('#pic_department').on('change', function() {
-        loadTools();
-    });
-    
-    // Trigger load tools ketika section berubah
-    $('#pic_section').on('change', function() {
-        loadTools();
-    });
 
-    // Reset form ketika modal ditutup
-    $('#addPicModal').on('hidden.bs.modal', function() {
-        $(this).find('form')[0].reset();
-        $('#toolListBody').html(`
-            <tr>
-                <td colspan="5" class="text-center text-muted">
-                    Pilih Department dan Section untuk menampilkan list tool
-                </td>
-            </tr>
-        `);
-        $('#selectAllTools').prop('checked', false);
-    });
-});
-</script>
-@endsection

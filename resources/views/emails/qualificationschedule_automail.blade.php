@@ -37,46 +37,25 @@
             line-height: 1.6;
             margin-bottom: 20px;
         }
-        .link-section {
-            margin: 20px 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin: 0;
         }
-        .link-item {
-            background-color: #f8f9fa;
-            border-left: 4px solid #007bff;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
+        th, td {
+            padding: 4px;
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: top;
         }
-        .link-item.overdue {
-            border-left-color: #dc3545;
-        }
-        .link-item.warning {
-            border-left-color: #ffc107;
-        }
-        .link-item h3 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-            color: #333333;
-        }
-        .link-item a {
-            display: inline-block;
-            background-color: #007bff;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+        th {
+            background-color: #eee;
             font-weight: bold;
-            transition: background-color 0.3s;
         }
-        .link-item.overdue a {
-            background-color: #dc3545;
-        }
-        .link-item.warning a {
-            background-color: #ffc107;
-            color: #333333;
-        }
-        .link-item a:hover {
-            opacity: 0.9;
+        .text-danger {
+            color: #dc3545;
+            font-weight: bold;
         }
         .email-footer {
             background-color: #f8f9fa;
@@ -94,27 +73,102 @@
         </div>
         
         <div class="email-body">
-            <p>Halo,</p>
-            <p>Berikut adalah ringkasan jadwal qualification yang perlu Anda perhatikan:</p>
+            <p>Halo <strong>{{ $picName }}</strong>,</p>
+            <p>Berikut adalah daftar dokumen yang menjadi tanggung jawab Anda dan dijadwalkan untuk review (jatuh tempo) pada bulan ini:</p>
             
-            <div class="link-section">
-                @foreach($links as $title => $url)
-                    @php
-                        $class = '';
-                        if (strpos($title, 'Overdue') !== false) {
-                            $class = 'overdue';
-                        } elseif (strpos($title, '1 Week') !== false) {
-                            $class = 'warning';
-                        }
-                    @endphp
-                    <div class="link-item {{ $class }}">
-                        <h3>{{ $title }}</h3>
-                        <a href="{{ $url }}" target="_blank">Lihat Detail</a>
-                    </div>
-                @endforeach
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>No Dokumen</th>
+                            <th>Tipe Dokumen</th>
+                            <th>Kategori</th>
+                            <th>Next Review Date</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($documents as $index => $picDoc)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $picDoc->document ? $picDoc->document->doc_number : '-' }}</td>
+                                <td>{{ $picDoc->document ? $picDoc->document->document_type : '-' }}</td>
+                                <td>{{ $picDoc->document ? $picDoc->document->sub_menu : '-' }}</td>
+                                <td>
+                                    @if($picDoc->document)
+                                        <span class="{{ \Carbon\Carbon::parse($picDoc->document->next_review)->isPast() ? 'text-danger' : '' }}">
+                                            {{ \Carbon\Carbon::parse($picDoc->document->next_review)->format('d M Y') }}
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td>
+                                    @php
+                                        $details = [];
+                                        if ($picDoc->document) {
+                                            $isUtility = strtolower($picDoc->document->sub_menu) === 'utility';
+                                            
+                                            if ($picDoc->document->equipment && !$isUtility) {
+                                                $eq = $picDoc->document->equipment;
+                                                $fields = [
+                                                    'equipment_id' => 'Equipment ID',
+                                                    'product_code' => 'Product Code',
+                                                    'equipment_name' => 'Equipment Name',
+                                                    'product_name' => 'Product Name',
+                                                    'no_batch' => 'No Batch',
+                                                    'active_subtance' => 'Active Substance',
+                                                    'systemName' => 'System Name',
+                                                    'dosageCode' => 'Dosage Code',
+                                                    'department' => 'Department',
+                                                    'building' => 'Building',
+                                                    'roomName' => 'Room Name',
+                                                    'roomNumber' => 'Room Number',
+                                                    'location' => 'Location',
+                                                    'serviceArea' => 'Service Area',
+                                                    'type' => 'Type',
+                                                    'model' => 'Model',
+                                                    'serial_number' => 'Serial Number'
+                                                ];
+                                                foreach ($fields as $key => $label) {
+                                                    if (!empty($eq->$key)) {
+                                                        $details[] = "<strong>{$label}:</strong> " . htmlspecialchars($eq->$key);
+                                                    }
+                                                }
+                                            } elseif ($picDoc->document->utility) {
+                                                $util = $picDoc->document->utility;
+                                                $fields = [
+                                                    'subject' => 'Subject',
+                                                    'system' => 'System',
+                                                    'model' => 'Model',
+                                                    'building' => 'Building',
+                                                    'location' => 'Location',
+                                                    'servicearea' => 'Service Area',
+                                                    'roomNumber' => 'Room Number',
+                                                    'roomName' => 'Room Name'
+                                                ];
+                                                foreach ($fields as $key => $label) {
+                                                    if (!empty($util->$key)) {
+                                                        $details[] = "<strong>{$label}:</strong> " . htmlspecialchars($util->$key);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    @if(count($details) > 0)
+                                        {!! implode('<br>', $details) !!}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
             
-            <p>Silakan klik tombol di atas untuk melihat detail masing-masing qualification.</p>
+            <p>Silakan segera lakukan pengecekan pada sistem QA Qualification.</p>
             <p>Terima kasih atas perhatian Anda.</p>
         </div>
         
