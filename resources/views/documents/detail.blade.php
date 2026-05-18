@@ -523,6 +523,24 @@
                                 <input type="date" id="nextReview" name="nextreview" class="form-control" readonly>
                             </div>
                             <div class="col-md-3 mb-3">
+                                <label class="font-weight-bold">PIC</label>
+                                <select id="pic_id" name="pic_id" class="form-control" disabled>
+                                    <option value="">Select PIC</option>
+                                    @foreach(\App\PIC::all() as $pic)
+                                        <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="font-weight-bold">CC PIC</label>
+                                <select id="ccpic_id" name="ccpic_id" class="form-control" disabled>
+                                    <option value="">Select CC PIC</option>
+                                    @foreach(\App\PIC::all() as $pic)
+                                        <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
                                 <label class="font-weight-bold">Upload Document <span
                                         class="text-danger">*</span></label>
                                 <input type="file" id="fileInput" name="file" class="form-control"
@@ -920,8 +938,12 @@ $('#documentForm').on('submit', function(e) {
                     (selectedType === 'Operational Qualification Report' && subMenu === 'computer')
                 ) {
                     $('#frequencyReview').prop('disabled', false);
+                    $('#pic_id').prop('disabled', false);
+                    $('#ccpic_id').prop('disabled', false);
                 } else {
                     $('#frequencyReview').prop('disabled', true).val('');
+                    $('#pic_id').prop('disabled', true).val('');
+                    $('#ccpic_id').prop('disabled', true).val('');
                 }
             }
 // Next Review Calculation auto fill

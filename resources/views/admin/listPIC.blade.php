@@ -126,7 +126,6 @@
 </div>
 
 <!-- Modal Tambah PIC -->
-<!-- Modal Tambah PIC -->
 <div class="modal fade" id="addPicModal" tabindex="-1" aria-labelledby="addPicModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

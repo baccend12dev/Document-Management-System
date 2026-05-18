@@ -29,7 +29,7 @@ class QualificationSchedule extends Command
      */
     public function handle()
     {
-        $now = Carbon::now();
+        $now = Carbon::now()->addDays(7);
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
@@ -41,7 +41,7 @@ class QualificationSchedule extends Command
             'Validation Report'
         ])
         ->whereNotNull('next_review')
-        ->whereBetween('next_review', [$startOfMonth, $endOfMonth])
+        ->where('next_review', '<=', $endOfMonth)
         ->get();
 
         if ($documentsThisMonth->isEmpty()) {

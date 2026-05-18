@@ -416,6 +416,15 @@ class DocumentController extends Controller
                 ]);
                 
                 $createdHistories[] = $history;
+
+                // Simpan ke PicDocument jika pic_id diisi
+                if (!empty($data['pic_id'])) {
+                    \App\PicDocument::create([
+                        'pic_id' => $data['pic_id'],
+                        'document_id' => $document->id,
+                        'ccpic_id' => !empty($data['ccpic_id']) ? $data['ccpic_id'] : null,
+                    ]);
+                }
             }
             
             $message = count($toolIds) > 1 

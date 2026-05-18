@@ -736,6 +736,31 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold small mb-2">PIC</label>
+                                <select id="pic_id" name="pic_id" class="form-control" disabled>
+                                    <option value="">Select PIC</option>
+                                    @foreach(\App\PIC::all() as $pic)
+                                        <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold small mb-2">CC PIC</label>
+                                <select id="ccpic_id" name="ccpic_id" class="form-control" disabled>
+                                    <option value="">Select CC PIC</option>
+                                    @foreach(\App\PIC::all() as $pic)
+                                        <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- File Upload -->
                     <div class="form-group border-top pt-3">
                         <label class="font-weight-bold small mb-3 d-block">
@@ -1370,8 +1395,12 @@ function toggleFrequencyReview(subMenu) {
         (selectedType === 'Operational Qualification Report' && subMenu === 'computer')
     ) {
         $('#reviewFrequency').prop('disabled', false);
+        $('#pic_id').prop('disabled', false);
+        $('#ccpic_id').prop('disabled', false);
     } else {
         $('#reviewFrequency').prop('disabled', true).val('');
+        $('#pic_id').prop('disabled', true).val('');
+        $('#ccpic_id').prop('disabled', true).val('');
     }
 }
 
