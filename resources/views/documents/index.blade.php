@@ -276,9 +276,9 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <p class="text-muted mb-1 small">Utility</p>
+                                    <p class="text-muted mb-1 small">Computerized System</p>
                                     <h2 class="mb-0 font-weight-bold" style="color: #eab308;">
-                                        {{ $documents->where('sub_menu', 'utility')->count() }}
+                                        {{ $documents->where('sub_menu', 'computer')->count() }}
                                     </h2>
                                 </div>
                                 <i class="fas fa-bolt fa-2x" style="color: #eab308; opacity: 0.3;"></i>
@@ -315,8 +315,6 @@
                                     <option value="">All Categories</option>
                                     <option value="equipment"
                                         {{ request('category') == 'equipment' ? 'selected' : '' }}>Equipment</option>
-                                    <option value="utility" {{ request('category') == 'utility' ? 'selected' : '' }}>
-                                        Utility</option>
                                     <option value="room" {{ request('category') == 'room' ? 'selected' : '' }}>Room
                                     </option>
                                     <option value="computer" {{ request('category') == 'computer' ? 'selected' : '' }}>
@@ -465,7 +463,6 @@
                                     @php
                                     $categoryConfig = [
                                     'equipment' => ['icon' => 'wrench', 'class' => 'info', 'label' => 'Equipment'],
-                                    'utility' => ['icon' => 'bolt', 'class' => 'warning', 'label' => 'Utility'],
                                     'room' => ['icon' => 'building', 'class' => 'success', 'label' => 'Room'],
                                     'computer' => ['icon' => 'laptop', 'class' => 'primary', 'label' => 'Computer'],
                                     'cleaning' => ['icon' => 'spray-can', 'class' => 'secondary', 'label' =>
@@ -856,7 +853,6 @@ function loadSubMenus() {
 //function load subject options based on sub menu
 const menuMapping = {
     'equipment': ['Equipment'],
-    'utility': ['PW', 'WFI', 'COAF', 'N2'],
     'room': [' '],
     'computer': ['System'],
     'process-mediafill': ['Product'],

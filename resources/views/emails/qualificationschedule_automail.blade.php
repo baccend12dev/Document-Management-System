@@ -85,33 +85,39 @@
                             <th>Tipe Dokumen</th>
                             <th>Kategori</th>
                             <th>Next Review Date</th>
+                            <th>CC PIC</th>
                             <th>Detail</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($documents as $index => $picDoc)
+                        @foreach($documents as $index => $item)
+                            @php
+                                $doc = $item['document'];
+                                $ccList = $item['cc_list'];
+                            @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $picDoc->document ? $picDoc->document->doc_number : '-' }}</td>
-                                <td>{{ $picDoc->document ? $picDoc->document->document_type : '-' }}</td>
-                                <td>{{ $picDoc->document ? $picDoc->document->sub_menu : '-' }}</td>
+                                <td>{{ $doc ? $doc->doc_number : '-' }}</td>
+                                <td>{{ $doc ? $doc->document_type : '-' }}</td>
+                                <td>{{ $doc ? $doc->sub_menu : '-' }}</td>
                                 <td>
-                                    @if($picDoc->document)
-                                        <span class="{{ \Carbon\Carbon::parse($picDoc->document->next_review)->isPast() ? 'text-danger' : '' }}">
-                                            {{ \Carbon\Carbon::parse($picDoc->document->next_review)->format('d M Y') }}
+                                    @if($doc)
+                                        <span class="{{ \Carbon\Carbon::parse($doc->next_review)->isPast() ? 'text-danger' : '' }}">
+                                            {{ \Carbon\Carbon::parse($doc->next_review)->format('d M Y') }}
                                         </span>
                                     @else
                                         -
                                     @endif
                                 </td>
+                                <td>{{ $ccList }}</td>
                                 <td>
                                     @php
                                         $details = [];
-                                        if ($picDoc->document) {
-                                            $isUtility = strtolower($picDoc->document->sub_menu) === 'utility';
+                                        if ($doc) {
+                                            $isUtility = strtolower($doc->sub_menu) === 'utility';
                                             
-                                            if ($picDoc->document->equipment && !$isUtility) {
-                                                $eq = $picDoc->document->equipment;
+                                            if ($doc->equipment && !$isUtility) {
+                                                $eq = $doc->equipment;
                                                 $fields = [
                                                     'equipment_id' => 'Equipment ID',
                                                     'product_code' => 'Product Code',
@@ -136,8 +142,8 @@
                                                         $details[] = "<strong>{$label}:</strong> " . htmlspecialchars($eq->$key);
                                                     }
                                                 }
-                                            } elseif ($picDoc->document->utility) {
-                                                $util = $picDoc->document->utility;
+                                            } elseif ($doc->utility) {
+                                                $util = $doc->utility;
                                                 $fields = [
                                                     'subject' => 'Subject',
                                                     'system' => 'System',

@@ -171,13 +171,13 @@
                         <tr>
                             <th style="width: 10px"></th>
                             <th style="width: 40px">#</th>
+                            <th style="width: 120px">Aksi</th>
                             <th>Subject</th>
                             <th>System</th>
                             <th>Model</th>
                             <th>Building</th>
                             <th>Location</th>
                             <th>Service Area</th>
-                            <th style="width: 120px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -189,6 +189,31 @@
                                 </button>
                             </td>
                             <td>{{ $data->firstItem() + $index }}</td>
+                            <td>
+                                <a href="{{ route('utility.document', $row->id) }}" class="btn btn-sm btn-info" title="Lihat Dokumen">
+                                    <i class="fas fa-file-alt"></i>
+                                </a>
+                                <button class="btn btn-sm btn-warning btn-edit"
+                                    data-id="{{ $row->id }}"
+                                    data-subject="{{ $row->subject }}"
+                                    data-system="{{ $row->system }}"
+                                    data-model="{{ $row->model }}"
+                                    data-building="{{ $row->building }}"
+                                    data-location="{{ $row->location }}"
+                                    data-servicearea="{{ $row->servicearea }}"
+                                    data-roomnumber="{{ $row->roomNumber }}"
+                                    data-roomname="{{ $row->roomName }}"
+                                    data-toggle="modal" data-target="#editModal" title="Edit Data">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="{{ route('utility.masterlist.destroy', $row->id) }}" method="POST" style="display:inline;" class="form-delete">
+                                    {{csrf_field()}}
+                                    {{method_field('DELETE')}}
+                                    <button type="submit" class="btn btn-sm btn-danger btn-delete" title="Hapus Data">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
                             <td>
                                 @foreach(explode(',', $row->subject ? $row->subject : '') as $val)
                                     @if($val)<span class="badge-multi">{{ $val }}</span>@endif
@@ -219,31 +244,7 @@
                                     @if($val)<span class="badge-multi">{{ $val }}</span>@endif
                                 @endforeach
                             </td>
-                            <td>
-                                <a href="{{ route('utility.document', $row->id) }}" class="btn btn-sm btn-info" title="Lihat Dokumen">
-                                    <i class="fas fa-file-alt"></i>
-                                </a>
-                                <button class="btn btn-sm btn-warning btn-edit"
-                                    data-id="{{ $row->id }}"
-                                    data-subject="{{ $row->subject }}"
-                                    data-system="{{ $row->system }}"
-                                    data-model="{{ $row->model }}"
-                                    data-building="{{ $row->building }}"
-                                    data-location="{{ $row->location }}"
-                                    data-servicearea="{{ $row->servicearea }}"
-                                    data-roomnumber="{{ $row->roomNumber }}"
-                                    data-roomname="{{ $row->roomName }}"
-                                    data-toggle="modal" data-target="#editModal" title="Edit Data">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <form action="{{ route('utility.masterlist.destroy', $row->id) }}" method="POST" style="display:inline;" class="form-delete">
-                                    {{csrf_field()}}
-                                    {{method_field('DELETE')}}
-                                    <button type="submit" class="btn btn-sm btn-danger btn-delete" title="Hapus Data">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
+                            
                         </tr>
                         <tr class="expand-row d-none bg-light">
                             <td colspan="9">

@@ -27,9 +27,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="ccpic_id" class="form-label">CC PIC (Opsional)</label>
-                            <select class="form-control" id="ccpic_id" name="ccpic_id">
-                                <option value="">-- Tidak ada CC --</option>
+                            <label for="ccpic_id" class="form-label">CC PIC (Opsional, Bisa pilih lebih dari satu)</label>
+                            <select class="form-control" id="ccpic_id" name="ccpic_id[]" multiple="multiple">
                                 @foreach($ccpics as $cc)
                                     <option value="{{ $cc->id }}">{{ $cc->name }} ({{ $cc->department }} - {{ $cc->section }})</option>
                                 @endforeach

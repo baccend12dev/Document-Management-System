@@ -29,7 +29,7 @@ class QualificationSchedule extends Command
      */
     public function handle()
     {
-        $now = Carbon::now()->addDays(7);
+        $now = Carbon::now();
         $startOfMonth = $now->copy()->startOfMonth();
         $endOfMonth = $now->copy()->endOfMonth();
 
@@ -38,7 +38,8 @@ class QualificationSchedule extends Command
             'Performance Qualification Report',
             'Operational Qualification Report',
             'Periodic Review',
-            'Validation Report'
+            'Validation Report',
+            'Monitoring Report'
         ])
         ->whereNotNull('next_review')
         ->where('next_review', '<=', $endOfMonth)
@@ -70,11 +71,32 @@ class QualificationSchedule extends Command
             if (!$mainPic || !$mainPic->email) continue;
 
             $ccEmails = [];
-            foreach ($picDocs as $pd) {
-                if ($pd->ccPic && $pd->ccPic->email) {
-                    $ccEmails[] = $pd->ccPic->email;
+            $uniqueDocs = [];
+            
+            // Group rows by document_id to prevent duplicate rows for multiple CCs
+            $rowsByDoc = $picDocs->groupBy('document_id');
+            
+            foreach ($rowsByDoc as $docId => $rows) {
+                $firstRow = $rows->first();
+                if (!$firstRow->document) continue;
+                
+                // Gather CC emails and names
+                $ccNames = [];
+                foreach ($rows as $row) {
+                    if ($row->ccPic) {
+                        if ($row->ccPic->email) {
+                            $ccEmails[] = $row->ccPic->email;
+                        }
+                        $ccNames[] = $row->ccPic->name;
+                    }
                 }
+                
+                $uniqueDocs[] = [
+                    'document' => $firstRow->document,
+                    'cc_list' => empty($ccNames) ? '-' : implode(', ', $ccNames)
+                ];
             }
+            
             $ccEmails = array_unique($ccEmails);
 
             // Send email
@@ -83,7 +105,7 @@ class QualificationSchedule extends Command
                 $mail->cc($ccEmails);
             }
             
-            $mail->send(new QualificationScheduleMailAutoMail($mainPic->name, $picDocs));
+            $mail->send(new QualificationScheduleMailAutoMail($mainPic->name, $uniqueDocs));
         }
 
         $this->info("Notifikasi Qualification bulan ini berhasil dikirim ke " . $groupedByPic->count() . " PIC.");

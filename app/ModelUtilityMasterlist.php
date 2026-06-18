@@ -25,7 +25,42 @@ class ModelUtilityMasterlist extends Model {
   {
     return $this->hasMany(DocumentEquipment::class, 'tools_id', 'id')->where('sub_menu', 'utility');
   }
-  use AuditTrail;
 
+  public function documents()
+  {
+    return $this->hasMany(DocumentEquipment::class, 'tools_id', 'id')->where('sub_menu', 'utility');
+  }
+
+  public function getEquipmentIdAttribute()
+  {
+    return $this->system;
+  }
+
+  public function getProductCodeAttribute()
+  {
+    return $this->model;
+  }
+
+  public function getEquipmentNameAttribute()
+  {
+    return $this->subject;
+  }
+
+  public function getDepartmentAttribute()
+  {
+    return $this->servicearea;
+  }
+
+  public function getDosageCodeAttribute()
+  {
+    return $this->location;
+  }
+
+  public function getSubMenuAttribute()
+  {
+    return 'utility';
+  }
+
+  use AuditTrail;
 }
 

@@ -134,13 +134,9 @@
                     <p class="text-xs text-gray-500">Updated: {{ $tool->updated_at }}</p>
                 </div>
                 <div class="mt-4 flex space-x-2">
-                    <a href="{{ route('detail-document.detail', $tool->id) }}"
+                    <a href="{{ $tool->sub_menu === 'utility' ? route('utility.document', $tool->id) : route('detail-document.detail', $tool->id) }}"
                         class="flex-1 bg-blue-600 text-white text-xs py-2 rounded-md hover:bg-blue-700 transition text-center">
                         View Details
-                    </a>
-                    <a href="#"
-                        class="flex-1 bg-gray-200 text-gray-800 text-xs py-2 rounded-md hover:bg-gray-300 transition text-center">
-                        Add Doc
                     </a>
                 </div>
             </div>

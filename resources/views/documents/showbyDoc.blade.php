@@ -1,6 +1,6 @@
 @extends('layouts.layout')
 @section('styles')
-    <style>
+<style>
     .calibration-container {
         background: #f8f9fa;
         padding: 20px;
@@ -359,7 +359,6 @@
                         <th> Document Number </th>
                         <th> Document type </th>
                         <th> Remarks </th>
-                        <th> Action </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -372,21 +371,6 @@
                         <td><span class="equipment-code">{{ $masterData->doc_number }}</span></td>
                         <td>{{ $masterData->document_type}}</td>
                         <td> {{$masterData->remarks}}</td>
-                        <!-- view data using modal -->
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-info btn-sm" title="View" data-toggle="modal"
-                                    data-target="#detailModal" data-result="{{ $masterData->Result }}"
-                                    data-createdby="{{ $masterData->updated_by }}" data-id="{{ $masterData->ToolsId }}">
-                                    <i class="fa fa-eye"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-danger delete-param"
-                                    title="Delete Parameter" data-toggle="modal" data-target="#deleteParamModal"
-                                    data-id="{{ $masterData->id }}" data-name="{{ $masterData->NoCalibration }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
                     </tr>
                     @empty
                     <tr>

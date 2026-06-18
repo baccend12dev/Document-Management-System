@@ -387,6 +387,7 @@
                                 <th style="width: 100px;">Requalification</th>
                                 <th style="width: 120px;">Last Updated</th>
                                 <th>Next Review</th>
+                                <th>Remark</th>
                                 <th style="width: 200px;">Action</th>
                             </tr>
                         </thead>
@@ -400,6 +401,7 @@
                                 <td> {{$doc->requalification}} </td>
                                 <td>{{ $doc->updated_at->format('d/m/Y') }}</td>
                                 <td>{{$doc->next_review}}</td>
+                                <td>{{$doc->remarks}}</td>
                                 <td>
                                     <div class="action-buttons">
                                         <button class="btn-icon primary view-pdf" data-document-id="{{ $doc->id }}"
@@ -532,14 +534,13 @@
                                 </select>
                             </div>
                             <div class="col-md-3 mb-3">
-                                <label class="font-weight-bold">CC PIC</label>
-                                <select id="ccpic_id" name="ccpic_id" class="form-control" disabled>
-                                    <option value="">Select CC PIC</option>
-                                    @foreach(\App\PIC::all() as $pic)
-                                        <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                                 <label class="font-weight-bold">CC PIC (Bisa pilih lebih dari satu)</label>
+                                 <select id="ccpic_id" name="ccpic_id[]" class="form-control" multiple="multiple" disabled>
+                                     @foreach(\App\PIC::all() as $pic)
+                                         <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>
+                                     @endforeach
+                                 </select>
+                             </div>
                             <div class="col-md-3 mb-3">
                                 <label class="font-weight-bold">Upload Document <span
                                         class="text-danger">*</span></label>
@@ -930,6 +931,19 @@ $('#documentForm').on('submit', function(e) {
             });
 
 
+            $(document).ready(function() {
+                $('#pic_id').select2({
+                    placeholder: "Select PIC",
+                    allowClear: true,
+                    width: '100%'
+                });
+                $('#ccpic_id').select2({
+                    placeholder: "Select CC PIC",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+
             function toggleFrequencyReview() {
                 const allowedTypes = ['Validation Report', 'Performance Qualification Report'];
                 const selectedType = $('#documentType').val();
@@ -938,12 +952,12 @@ $('#documentForm').on('submit', function(e) {
                     (selectedType === 'Operational Qualification Report' && subMenu === 'computer')
                 ) {
                     $('#frequencyReview').prop('disabled', false);
-                    $('#pic_id').prop('disabled', false);
-                    $('#ccpic_id').prop('disabled', false);
+                    $('#pic_id').prop('disabled', false).trigger('change');
+                    $('#ccpic_id').prop('disabled', false).trigger('change');
                 } else {
                     $('#frequencyReview').prop('disabled', true).val('');
-                    $('#pic_id').prop('disabled', true).val('');
-                    $('#ccpic_id').prop('disabled', true).val('');
+                    $('#pic_id').prop('disabled', true).val(null).trigger('change');
+                    $('#ccpic_id').prop('disabled', true).val(null).trigger('change');
                 }
             }
 // Next Review Calculation auto fill

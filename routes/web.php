@@ -157,6 +157,7 @@ Route::delete('/admin/delete-pic/{id}', 'AdminController@deletePIC')->name('pic.
 Route::get('/admin/pic/{id}/documents/add', 'AdminController@addPicDocument')->name('pic.add-document');
 Route::post('/admin/pic/{id}/documents/store', 'AdminController@storePicDocument')->name('pic.store-document');
 Route::get('/admin/pic/{pic_id}/documents/{doc_id}/edit', 'AdminController@editPicDocument')->name('pic.documents.edit');
+Route::put('/admin/pic/{pic_id}/documents/{doc_id}', 'AdminController@updatePicDocument')->name('pic.documents.update');
 Route::delete('/admin/pic/{pic_id}/documents/{doc_id}', 'AdminController@destroyPicDocument')->name('pic.documents.destroy');
 
 

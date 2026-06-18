@@ -54,9 +54,6 @@
                                         <a href="{{ route('pic.add-document', $pic->id) }}" class="btn btn-sm btn-outline-primary me-1" title="Tambah Dokumen">
                                             <i class="fas fa-plus"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-warning me-1">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
                                         <form action="{{ route('pic.delete', $pic->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus PIC ini?')">
                                             {{ csrf_field() }}
                                             {{ method_field('DELETE') }}
@@ -78,32 +75,49 @@
                                                         <th scope="col">Tipe Dokumen</th>
                                                         <th scope="col">Next Review Date</th>
                                                         <th scope="col">Kategori</th>
-                                                        <th scope="col">CC PIC</th>
+                                                        <th scope="col">Keterangan (Role)</th>
+                                                        <th scope="col">Daftar CC</th>
                                                         <th scope="col">Action</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @forelse($pic->picDocuments as $picDoc)
+                                                    @forelse($pic->getAllDocuments() as $docInfo)
                                                     <tr>
                                                         <th scope="row">{{ $loop->iteration }}</th>
-                                                        <td>{{ $picDoc->document ? $picDoc->document->doc_number : 'N/A' }}</td>
-                                                        <td>{{ $picDoc->document ? $picDoc->document->document_type : 'N/A' }}</td>
-                                                        <td>{{ $picDoc->document ? $picDoc->document->next_review : 'N/A' }}</td>
-                                                        <td>{{ $picDoc->document ? $picDoc->document->sub_menu : 'N/A' }}</td>
-                                                        <td>{{ $picDoc->ccPic ? $picDoc->ccPic->name : '-' }}</td>
+                                                        <td>{{ $docInfo['doc_number'] }}</td>
+                                                        <td>{{ $docInfo['document_type'] }}</td>
+                                                        <td>{{ $docInfo['next_review'] }}</td>
+                                                        <td>{{ $docInfo['sub_menu'] }}</td>
                                                         <td>
-                                                            <form action="{{ route('pic.documents.destroy', [$pic->id, $picDoc->id]) }}" method="POST" style="display:inline;">
-                                                                {{ csrf_field() }}
-                                                                {{ method_field('DELETE') }}
-                                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure?')">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
+                                                            @if($docInfo['is_main'])
+                                                                <span class="badge badge-success" style="background-color: #28a745; color: white; padding: 0.25em 0.5em;">Utama</span>
+                                                            @else
+                                                                <span class="badge badge-secondary" style="background-color: #6c757d; color: white; padding: 0.25em 0.5em;">CC (Utama: {{ $docInfo['main_pic_name'] }})</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>{{ $docInfo['cc_list'] }}</td>
+                                                        <td>
+                                                            @if($docInfo['is_main'])
+                                                            <div class="d-flex" style="gap: 5px;">
+                                                                <a href="{{ route('pic.documents.edit', [$pic->id, $docInfo['id']]) }}" class="btn btn-sm btn-outline-warning" title="Edit CC PIC">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <form action="{{ route('pic.documents.destroy', [$pic->id, $docInfo['id']]) }}" method="POST" style="display:inline;">
+                                                                    {{ csrf_field() }}
+                                                                    {{ method_field('DELETE') }}
+                                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Apakah Anda yakin ingin menghapus tugas dokumen ini?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                            @else
+                                                            <span class="text-muted" style="font-size: 0.8rem;">Hanya Utama</span>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                     @empty
                                                     <tr>
-                                                        <td colspan="7" class="text-center text-muted">Belum ada dokumen yang ditugaskan ke PIC ini.</td>
+                                                        <td colspan="8" class="text-center text-muted">Belum ada dokumen yang ditugaskan ke PIC ini.</td>
                                                     </tr>
                                                     @endforelse
                                                 </tbody>

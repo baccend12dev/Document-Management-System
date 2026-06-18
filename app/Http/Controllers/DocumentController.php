@@ -13,6 +13,7 @@ use App\ProcessMediafillValidation;
 use App\CleaningValidation;
 use App\AnalyticalValidation;
 use App\AnalyticalMethodValidation;
+use App\ModelUtilityMasterlist;
 use Illuminate\Support\Facades\Storage;
 use App\DocumentEquipment;
 use Carbon\Carbon;
@@ -235,12 +236,6 @@ class DocumentController extends Controller
                 'category' => 'Qualification',
             ],
             [
-                'id' => 'utility',
-                'label' => 'Utility Qualification',
-                'icon' => '⚡',
-                'category' => 'Qualification',
-            ],
-            [
                 'id' => 'room',
                 'label' => 'Room Qualification',
                 'icon' => '🏢',
@@ -419,11 +414,23 @@ class DocumentController extends Controller
 
                 // Simpan ke PicDocument jika pic_id diisi
                 if (!empty($data['pic_id'])) {
-                    \App\PicDocument::create([
-                        'pic_id' => $data['pic_id'],
-                        'document_id' => $document->id,
-                        'ccpic_id' => !empty($data['ccpic_id']) ? $data['ccpic_id'] : null,
-                    ]);
+                    $ccpicIds = isset($data['ccpic_id']) ? (array) $data['ccpic_id'] : [];
+                    if (empty($ccpicIds)) {
+                        \App\PicDocument::create([
+                            'pic_id' => $data['pic_id'],
+                            'document_id' => $document->id,
+                            'ccpic_id' => null,
+                        ]);
+                    } else {
+                        foreach ($ccpicIds as $ccId) {
+                            if (empty($ccId)) continue;
+                            \App\PicDocument::create([
+                                'pic_id' => $data['pic_id'],
+                                'document_id' => $document->id,
+                                'ccpic_id' => $ccId,
+                            ]);
+                        }
+                    }
                 }
             }
             
@@ -457,28 +464,43 @@ class DocumentController extends Controller
     public function MasterlistDocuments(Request $request)
     {
         // dd($request->all());
-        $query = EquipmentQualification::with('documents');
-        // Terapkan filter berdasarkan input pengguna
-        if ($request->has('submenu') && $request->submenu != '') {
-            $query->where('sub_menu', $request->submenu);
+        //jika sub menu adalah utility maka akan mencari dari model utility
+        if ($request->has('submenu') && strtolower($request->submenu) == 'utility') {
+            $query = ModelUtilityMasterlist::with('utilityDocuments');
+            
+            if ($request->has('search') && $request->search != '') {
+                $searchTerm = $request->search;
+                $query->where(function($q) use ($searchTerm) {
+                    $q->where('system', 'LIKE', '%' . $searchTerm . '%')
+                      ->orWhere('model', 'LIKE', '%' . $searchTerm . '%')
+                      ->orWhere('subject', 'LIKE', '%' . $searchTerm . '%');
+                });
+            }
+        } else {
+            $query = EquipmentQualification::with('documents');
+            
+            // Terapkan filter berdasarkan input pengguna
+            if ($request->has('submenu') && $request->submenu != '') {
+                $query->where('sub_menu', $request->submenu);
+            }
+            if ($request->has('department') && $request->department != '') {
+                $query->where('department', $request->department);
+            }
+            if ($request->has('dosage_code') && $request->dosage_code != '') {
+                $query->where('dosageCode', $request->dosage_code);
+            }
+            if ($request->has('search') && $request->search != '') {
+                $searchTerm = $request->search;
+                $query->where(function($q) use ($searchTerm) {
+                    $q->where('equipment_id', 'LIKE', '%' . $searchTerm . '%')
+                      ->orWhere('product_code', 'LIKE', '%' . $searchTerm . '%')
+                      ->orWhere('equipment_name', 'LIKE', '%' . $searchTerm . '%');
+                });
+            }
         }
-        if ($request->has('department') && $request->department != '') {
-            $query->where('department', $request->department);
-        }
-        if ($request->has('dosage_code') && $request->dosage_code != '') {
-            $query->where('dosageCode', $request->dosage_code);
-        }
-        if ($request->has('search') && $request->search != '') {
-            $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('equipment_id', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('product_code', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('equipment_name', 'LIKE', '%' . $searchTerm . '%');
-            });
-        }
+
        $perPage = request('per_page', 10); // Default to 10 if not set
         $tools = $query->paginate($perPage);
-
 
     // Hitung statistik
 
@@ -632,7 +654,8 @@ class DocumentController extends Controller
             'Performance Qualification Report',
             'Operational Qualification Report',
             'Periodic Review',
-            'Validation Report'
+            'Validation Report',
+            'Monitoring Report'
         ])
         ->whereNotNull('next_review');
 
