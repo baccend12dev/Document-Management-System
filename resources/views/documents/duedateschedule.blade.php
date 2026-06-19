@@ -390,16 +390,11 @@
                                                 data-frequency="{{ $item->review_frequency }}"
                                                 data-systemName="{{ $item->equipment ? $item->equipment->systemName : '' }}">
                                             <i class="fas fa-edit"></i>
-                                        </button>
-                                            <a href="" class="btn btn-outline-info" title="View History">
+                                            </button>
+                                            <a href="{{ route('documents.history', $item->id) }}" class="btn btn-outline-info" title="View History">
                                                 <i class="fas fa-history"></i>
                                             </a>
-                                            <button type="button" class="btn btn-sm btn-danger delete-param"
-                                                title="Delete Parameter" data-toggle="modal"
-                                                data-target="#deleteParamModal" data-id="{{ $item->id }}"
-                                                data-name="{{ $item->NoCalibration }}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            
 
                                         </div>
                                     </td>

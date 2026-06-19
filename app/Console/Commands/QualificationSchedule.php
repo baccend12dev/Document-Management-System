@@ -30,8 +30,10 @@ class QualificationSchedule extends Command
     public function handle()
     {
         $now = Carbon::now();
+        // Awal bulan sekarang (contoh: 2026-06-01 00:00:00)
         $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
+        // Akhir dari 3 bulan ke depan (contoh: jika sekarang Juni, maka akan mengambil sampai akhir September)
+        $endOfMonth = $now->copy()->addMonths(3)->endOfMonth();
 
         // 1. Get documents that have a review date in this month
         $documentsThisMonth = \App\DocumentEquipment::whereIn('document_type', [

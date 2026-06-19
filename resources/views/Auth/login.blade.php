@@ -233,7 +233,10 @@
 <body>
     <div class="login-container">
     <div class="login-header">
-        <i class="fas fa-tools"></i> KKV Management System
+        <div style="text-align: center; margin-bottom: 15px;">
+            <img src="{{ asset('Template/dist/img/icon-kkv-removebg.png') }}" alt="Logo KKV" style="max-height: 85px; width: auto;">
+        </div>
+        KKV Management System
     </div>
     
     <div class="login-body">
