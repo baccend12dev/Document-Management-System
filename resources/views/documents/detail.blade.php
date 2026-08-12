@@ -316,13 +316,6 @@
     @endphp
 
     <div class="container">
-        <div class="header">
-            <div>
-                <h1>{{$document->equipment_id}} {{$document->product_code}} | {{$document->equipment_name}}</h1>
-                <div class="header-subtitle">{{$document->sub_menu}}</div>
-            </div>
-            <button class="close-btn" onclick="window.close()">×</button>
-        </div>
         <div class="content">
             <!-- Tool Details Section -->
             <div class="section">
@@ -330,11 +323,33 @@
                 <div class="details-grid">
                     <div class="detail-item">
                         <span class="detail-label">ID</span>
-                        <span class="detail-value"> {{$document->equipment_id}} {{$document->product_code}}</span>
+                        <span class="detail-value">
+                            @if($document->sub_menu === 'computer')
+                                {{$document->equipment_id}}
+                            @elseif($document->sub_menu === 'process-mediafill')
+                                {{$document->product_code}}
+                            @elseif($document->sub_menu === 'room')
+                                N/A
+                            @else
+                                {{$document->equipment_id}}
+                            @endif
+                        </span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Name</span>
-                        <span class="detail-value">{{$document->equipment_name}}</span>
+                        <span class="detail-value">
+                            @if($document->sub_menu === 'computer')
+                                {{$document->systemName}}
+                            @elseif($document->sub_menu === 'process-mediafill')
+                                {{$document->product_code}} | {{$document->product_name}}
+                            @elseif($document->sub_menu === 'room')
+                                {{$document->serviceArea}}
+                            @elseif($document->sub_menu === 'analytical-method')
+                                {{$document->active_subtance}}
+                            @else
+                                {{$document->equipment_name}}
+                            @endif
+                        </span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Category</span>
@@ -349,8 +364,80 @@
                         <span class="detail-label">Total Documents</span>
                         <span class="detail-value">{{ $totalDocs }}/{{ $totalTypes }} Documents</span>
                     </div>
+                @if($document->sub_menu === 'cleaning' || $document->sub_menu === 'analytical-method')
+                    <div class="detail-item">
+                        <span class="detail-label">Active Subtance</span>
+                        <span class="detail-value">{{$document->active_subtance}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Product Name</span>
+                        <span class="detail-value">{{$document->product_name}}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Product Code</span>
+                        <span class="detail-value">{{$document->product_code}}</span>
+                    </div>
+                @endif
+
+                    @if($document->sub_menu === 'room')
+                    <div class="detail-item">
+                        <span class="detail-label">Room Details</span>
+                        <span class="detail-value">
+                            <button type="button" class="btn btn-sm btn-info text-white" data-toggle="modal" data-target="#roomDetailModal">
+                                👁️ View Rooms ({{ $rooms ? $rooms->count() : 0 }})
+                            </button>
+                        </span>
+                    </div>
+                    @endif
                 </div>
             </div>
+
+            @if($document->sub_menu === 'room')
+            <!-- Room Detail Modal -->
+            <div class="modal fade" id="roomDetailModal" tabindex="-1" role="dialog" aria-labelledby="roomDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title" id="roomDetailModalLabel">Room Details - Service Area: {{ $document->serviceArea }}</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @if($rooms && $rooms->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped table-hover mb-0" style="font-size: 13px;">
+                                        <thead class="bg-light text-dark">
+                                            <tr>
+                                                <th style="width: 50px;" class="py-1 px-2 text-center">#</th>
+                                                <th style="width: 140px;" class="py-1 px-2">Room Code</th>
+                                                <th class="py-1 px-2">Room Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($rooms as $index => $room)
+                                                <tr>
+                                                    <td class="py-1 px-2 text-center text-muted">{{ $index + 1 }}</td>
+                                                    <td class="py-1 px-2 font-weight-bold text-primary">{{ $room->room_code }}</td>
+                                                    <td class="py-1 px-2">{{ $room->room_name }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="alert alert-warning text-center">
+                                    Tidak ada data room yang ditemukan untuk Service Area <strong>{{ $document->serviceArea }}</strong>.
+                                </div>
+                            @endif
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             <!-- Document List Section -->
             <div class="section">
                 <h2 class="section-title">Associated Documents</h2>

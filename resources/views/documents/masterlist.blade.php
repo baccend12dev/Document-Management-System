@@ -115,7 +115,14 @@
                             <div class="badge badge-{{ $config['class'] }} p-2 rounded-lg mr-3">
                                 <i class="fas fa-{{ $config['icon'] }}"></i>
                             </div>
-                            <h3 class="font-semibold text-gray-900">{{ $tool->equipment_id }} {{ $tool->product_code }}
+                            <h3 class="font-semibold text-gray-900">
+                                @if($tool->sub_menu === 'computer')
+                                    {{ $tool->systemName }}
+                                @elseif($tool->sub_menu === 'room')
+                                    {{ $tool->serviceArea }}
+                                @else
+                                    {{ $tool->equipment_id }} {{ $tool->product_code }}
+                                @endif
                             </h3>
                         </div>
                         <p class="text-sm text-gray-600">{{ $tool->equipment_name }}</p>

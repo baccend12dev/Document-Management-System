@@ -14,6 +14,7 @@ use App\CleaningValidation;
 use App\AnalyticalValidation;
 use App\AnalyticalMethodValidation;
 use App\ModelUtilityMasterlist;
+use App\AhuRoom;
 use Illuminate\Support\Facades\Storage;
 use App\DocumentEquipment;
 use Carbon\Carbon;
@@ -597,10 +598,17 @@ class DocumentController extends Controller
         // dd($id);
         $document = EquipmentQualification::with('documents')->findOrFail($id);
         $subMenu = $document->sub_menu;
+        
         $documentTypes = $this->documentTypeMap[$subMenu];
-        // dd($documentTypes);
+
+        $rooms = null;
+        if ($subMenu === 'room') {
+            $rooms = AhuRoom::where('service_area', $document->serviceArea)
+                ->select(['room_name', 'room_code'])
+                ->get();
+        }
         // dd($document);
-        return view('documents.detail', compact('document', 'documentTypes'));
+        return view('documents.detail', compact('document', 'documentTypes', 'rooms'));
     }
     public function viewDocument($id)
     {
