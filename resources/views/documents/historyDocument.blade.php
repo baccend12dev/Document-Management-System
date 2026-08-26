@@ -56,6 +56,18 @@
             @if($histories->count() > 0)
                 <div class="timeline">
                     @foreach($histories as $index => $history)
+                    @php
+                        $isComputer = strtolower(isset($document->sub_menu) ? $document->sub_menu : '') === 'computer';
+                        $reviewLabel = 'Next Review PQ';
+                        if ($isComputer) {
+                            $prevHistory = $histories->get($index + 1);
+                            if ($prevHistory && $history->revision_number == $prevHistory->revision_number) {
+                                $reviewLabel = 'Periodic Review';
+                            } else {
+                                $reviewLabel = 'Next Review OQ';
+                            }
+                        }
+                    @endphp
                     <div class="timeline-item">
                         <div class="timeline-marker {{ $index == 0 ? 'bg-success' : 'bg-primary' }}">
                             <i class="fas fa-{{ $index == 0 ? 'check' : 'edit' }}"></i>
@@ -71,7 +83,7 @@
                                             Revision {{ $history->revision_number }} - Requalification {{ $history->requalification }}
                                         </h6>
                                         <small class="{{ $index == 0 ? 'text-white-50' : 'text-muted' }}">
-                                            <i class="fas fa-clock mr-1"></i>{{ \Carbon\Carbon::parse(substr($history->getOriginal('created_at'), 0, 19))->format('d M Y, H:i') }}
+                                             <i class="fas fa-clock mr-1"></i>{{ \Carbon\Carbon::parse(substr($history->getOriginal('created_at'), 0, 19))->format('d M Y, H:i') }}
                                         </small>
                                     </div>
                                     <div>
@@ -94,7 +106,7 @@
                                             <p class="text-muted">{{ $history->approved_date ? \Carbon\Carbon::parse($history->approved_date)->format('d M Y') : '-' }}</p>
                                         </div>
                                         <div class="col-md-6">
-                                            <p class="mb-2"><strong><i class="fas fa-calendar-alt text-warning mr-2"></i>Next Review:</strong></p>
+                                            <p class="mb-2"><strong><i class="fas fa-calendar-alt text-warning mr-2"></i>{{ $reviewLabel }}:</strong></p>
                                             <p class="text-muted">{{ $history->next_review ? \Carbon\Carbon::parse($history->next_review)->format('d M Y') : '-' }}</p>
                                         </div>
                                     </div>
