@@ -541,7 +541,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="editNextReview" class="font-weight-semibold">
-                                    Next Review <span class="text-danger">*</span>
+                                    <span id="labelNextReviewText">Next Review</span> <span class="text-danger">*</span>
+                                    <span id="badgeRevisionWarning" class="badge badge-warning bg-warning text-dark ml-2 ms-2 d-none" style="display: none;">doc di revisi akan kembali ke OQ</span>
                                 </label>
                                 <input type="date" 
                                        name="next_review" 
@@ -689,6 +690,8 @@ document.getElementById('filterForm').addEventListener('submit', function(e) {
 @endsection
 @section('scripts')
 <script>
+    let initialRevision = '';
+
     document.querySelectorAll('.edit-btn').forEach(button => {
         // console.log('button clicked');
         button.addEventListener('click', function() {
@@ -715,6 +718,16 @@ document.getElementById('filterForm').addEventListener('submit', function(e) {
             $('#modalDocNumber').text(docNumber);
             $('#editDocNumber').val(docNumber);
             $('#editRevision').val(revision);
+            initialRevision = (revision !== undefined && revision !== null) ? String(revision) : '';
+            $('#badgeRevisionWarning').addClass('d-none').hide();
+
+            // Ubah nama label jika category adalah "computer"
+            if (category && String(category).toLowerCase() === 'computer') {
+                $('#labelNextReviewText').text('Periodic Review');
+            } else {
+                $('#labelNextReviewText').text('Next Review');
+            }
+
             $('#editRequalification').val(requalification);
             $('#LastReview').text(approveDate);
             $('#DueDate').text(nextReview);
@@ -733,6 +746,17 @@ document.getElementById('filterForm').addEventListener('submit', function(e) {
             $('#editModal').modal('show');
         });
     });
+
+    // Deteksi jika revisi berubah
+    $('#editRevision').on('change', function() {
+        const currentRev = $(this).val();
+        if (currentRev !== '' && currentRev !== initialRevision) {
+            $('#badgeRevisionWarning').removeClass('d-none').show();
+        } else {
+            $('#badgeRevisionWarning').addClass('d-none').hide();
+        }
+    });
+
 // Next Review Calculation in modal
     $('#editApproveDate').on('change', function() {
         console.log($(this).val());
@@ -747,6 +771,9 @@ document.getElementById('filterForm').addEventListener('submit', function(e) {
     //reset modal
     $('#editModal').on('hidden.bs.modal', function () {
         $(this).find('form')[0].reset();
+        $('#labelNextReviewText').text('Next Review');
+        $('#badgeRevisionWarning').addClass('d-none').hide();
+        initialRevision = '';
     });
 
     // Update custom file input label with selected filename

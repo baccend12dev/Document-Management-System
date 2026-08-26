@@ -53,46 +53,72 @@
             background-color: #f0f0f0;
         }
 
+        .content {
+            padding: 24px 30px;
+        }
+
         .section {
-            margin-bottom: 40px;
+            margin-bottom: 24px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         .section-title {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
+            font-size: 17px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         /* Tool Details Grid */
         .details-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px 16px;
+            background-color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
         }
 
         .detail-item {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            font-weight: bold;
+            gap: 2px;
+            background: #ffffff;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .detail-label {
-            font-weight: 600;
-            color: #555;
-            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            font-size: 11px;
             text-transform: uppercase;
-            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
         .detail-value {
-            color: #333;
-            font-size: 15px;
+            color: #0f172a;
+            font-size: 13.5px;
+            font-weight: 600;
+            word-break: break-word;
         }
 
         .status-badge {
@@ -316,68 +342,78 @@
     @endphp
 
     <div class="container">
+        <div class="header">
+            <div>
+                <h1 style="font-size: 20px; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    @if($document->sub_menu === 'computer')
+                        {{ isset($document->systemName) && $document->systemName ? $document->systemName : (isset($document->equipment_name) && $document->equipment_name ? $document->equipment_name : 'Detail System') }}
+                    @elseif($document->sub_menu === 'room')
+                        Service Area: {{ isset($document->serviceArea) && $document->serviceArea ? $document->serviceArea : 'N/A' }}
+                    @elseif($document->sub_menu === 'process-mediafill')
+                        {{ isset($document->product_code) ? $document->product_code : '' }} - {{ isset($document->product_name) ? $document->product_name : 'Detail' }}
+                    @else
+                        {{ isset($document->equipment_id) ? $document->equipment_id : '' }} {{ isset($document->product_code) ? $document->product_code : '' }}
+                    @endif
+                    <span class="badge badge-primary" style="font-size: 12px; font-weight: 500;">{{ strtoupper($document->sub_menu) }}</span>
+                </h1>
+                <div class="header-subtitle" style="font-size: 13px; color: #64748b; margin-top: 2px;">
+                    {{ isset($document->equipment_name) ? $document->equipment_name : '' }}
+                </div>
+            </div>
+        </div>
+
         <div class="content">
             <!-- Tool Details Section -->
             <div class="section">
                 <h2 class="section-title">Tool Details</h2>
                 <div class="details-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">ID</span>
-                        <span class="detail-value">
-                            @if($document->sub_menu === 'computer')
-                                {{$document->equipment_id}}
-                            @elseif($document->sub_menu === 'process-mediafill')
-                                {{$document->product_code}}
-                            @elseif($document->sub_menu === 'room')
-                                N/A
-                            @else
-                                {{$document->equipment_id}}
-                            @endif
-                        </span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Name</span>
-                        <span class="detail-value">
-                            @if($document->sub_menu === 'computer')
-                                {{$document->systemName}}
-                            @elseif($document->sub_menu === 'process-mediafill')
-                                {{$document->product_code}} | {{$document->product_name}}
-                            @elseif($document->sub_menu === 'room')
-                                {{$document->serviceArea}}
-                            @elseif($document->sub_menu === 'analytical-method')
-                                {{$document->active_subtance}}
-                            @else
-                                {{$document->equipment_name}}
-                            @endif
-                        </span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Category</span>
-                        <span class="detail-value">{{$document->sub_menu}}</span>
-                    </div>
+                    @php
+                        $fieldsMap = [
+                            'equipment_id' => 'Equipment ID',
+                            'product_code' => 'Product Code',
+                            'equipment_name' => 'Equipment Name',
+                            'product_name' => 'Product Name',
+                            'systemName' => 'System Name',
+                            'active_subtance' => 'Active Substance',
+                            'no_batch' => 'No. Batch',
+                            'dosageCode' => 'Dosage Code',
+                            'department' => 'Department',
+                            'building' => 'Building',
+                            'roomName' => 'Room Name',
+                            'roomNumber' => 'Room Number',
+                            'location' => 'Location',
+                            'serviceArea' => 'Service Area',
+                            'ahu' => 'AHU',
+                            'type' => 'Type',
+                            'model' => 'Model',
+                            'serial_number' => 'Serial Number',
+                            'created_by' => 'Created By',
+                        ];
+                    @endphp
 
                     <div class="detail-item">
-                        <span class="detail-label">Last Updated</span>
-                        <span class="detail-value">{{$document->updated_at}}</span>
+                        <span class="detail-label">Category</span>
+                        <span class="detail-value"><span class="badge badge-info">{{ ucfirst($document->sub_menu) }}</span></span>
                     </div>
+
+                    @foreach($fieldsMap as $field => $label)
+                        @if(!empty($document->$field))
+                            <div class="detail-item">
+                                <span class="detail-label">{{ $label }}</span>
+                                <span class="detail-value">{{ $document->$field }}</span>
+                            </div>
+                        @endif
+                    @endforeach
+
                     <div class="detail-item">
                         <span class="detail-label">Total Documents</span>
                         <span class="detail-value">{{ $totalDocs }}/{{ $totalTypes }} Documents</span>
                     </div>
-                @if($document->sub_menu === 'cleaning' || $document->sub_menu === 'analytical-method')
+
                     <div class="detail-item">
-                        <span class="detail-label">Active Subtance</span>
-                        <span class="detail-value">{{$document->active_subtance}}</span>
+                        <span class="detail-label">Last Updated</span>
+                        <span class="detail-value">{{ $document->updated_at }}</span>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Product Name</span>
-                        <span class="detail-value">{{$document->product_name}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Product Code</span>
-                        <span class="detail-value">{{$document->product_code}}</span>
-                    </div>
-                @endif
 
                     @if($document->sub_menu === 'room')
                     <div class="detail-item">
