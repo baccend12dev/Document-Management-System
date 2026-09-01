@@ -39,7 +39,7 @@ class QualificationSchedule extends Command
         $documentsThisMonth = \App\DocumentEquipment::whereIn('document_type', [
             'Performance Qualification Report',
             'Operational Qualification Report',
-            'Periodic Review',
+            'Periodic Review Report',
             'Validation Report',
             'Monitoring Report'
         ])

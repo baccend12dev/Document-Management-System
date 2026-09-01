@@ -98,7 +98,7 @@
                             <i class="fas fa-calendar-check me-3"></i>
                             Next Qualification Schedule
                         </h2>
-                        <p class="mb-0 opacity-75">Jadwal Update Document yang Akan Datang</p>
+                        <p class="mb-0 opacity-75">Qualification Review Date (Qualification/Re-qualification)</p>
                     </div>
                 </div>
             </div>

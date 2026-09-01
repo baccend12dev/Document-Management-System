@@ -262,9 +262,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <li class="nav-item">
                             <a href="/documents/scedule" 
                             class="nav-link {{request()->is('documents/scedule') ? 'active' : ''}} " data-toggle="tooltip" data-placement="right"
-                                title="Kelola Alat">
+                                title="Qualification Schedule">
                                 <i class="nav-icon fas fa-calendar-alt"></i>
-                                <p>Jadwal Qualifikasi</p>
+                                <p>Qualification Schedule</p>
                             </a>
                         </li>
                     @endif

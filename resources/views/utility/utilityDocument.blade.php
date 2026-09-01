@@ -589,7 +589,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="font-weight-bold">CC PIC (Bisa pilih lebih dari satu)</label>
+                                    <label class="font-weight-bold">CC PIC (Can select more than one)</label>
                                     <select id="ccpic_id" name="ccpic_id[]" class="form-control" multiple="multiple" disabled>
                                         @foreach(\App\PIC::all() as $pic)
                                             <option value="{{ $pic->id }}">{{ $pic->name }} ({{ $pic->department }})</option>

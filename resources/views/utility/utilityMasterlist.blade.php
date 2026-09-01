@@ -69,7 +69,7 @@
                         {{-- Subject --}}
                         <div class="col-md-3 mb-3">
                             <label for="subject">Subject</label>
-                            <select name="subject[]" id="subject" class="form-control select2" multiple="multiple" data-placeholder="Pilih Subject">
+                            <select name="subject[]" id="subject" class="form-control select2" multiple="multiple" data-placeholder="Select Subject">
                                 @foreach($subjects as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -79,7 +79,7 @@
                         {{-- System --}}
                         <div class="col-md-3 mb-3">
                             <label for="system">System</label>
-                            <select name="system[]" id="system" class="form-control select2" multiple="multiple" data-placeholder="Pilih System">
+                            <select name="system[]" id="system" class="form-control select2" multiple="multiple" data-placeholder="Select System">
                                 @foreach($systems as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -89,7 +89,7 @@
                         {{-- Model --}}
                         <div class="col-md-3 mb-3">
                             <label for="model">Model</label>
-                            <select name="model[]" id="model" class="form-control select2" multiple="multiple" data-placeholder="Pilih Model">
+                            <select name="model[]" id="model" class="form-control select2" multiple="multiple" data-placeholder="Select Model">
                                 @foreach($models as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -99,7 +99,7 @@
                         {{-- Building --}}
                         <div class="col-md-3 mb-3">
                             <label for="building">Building</label>
-                            <select name="building[]" id="building" class="form-control select2" multiple="multiple" data-placeholder="Pilih Building">
+                            <select name="building[]" id="building" class="form-control select2" multiple="multiple" data-placeholder="Select Building">
                                 @foreach($buildings as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -109,7 +109,7 @@
                         {{-- Location --}}
                         <div class="col-md-3 mb-3">
                             <label for="location">Location</label>
-                            <select name="location[]" id="location" class="form-control select2" multiple="multiple" data-placeholder="Pilih Location">
+                            <select name="location[]" id="location" class="form-control select2" multiple="multiple" data-placeholder="Select Location">
                                 @foreach($locations as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -119,7 +119,7 @@
                         {{-- Service Area --}}
                         <div class="col-md-3 mb-3">
                             <label for="servicearea">Service Area</label>
-                            <select name="servicearea[]" id="servicearea" class="form-control select2" multiple="multiple" data-placeholder="Pilih Service Area">
+                            <select name="servicearea[]" id="servicearea" class="form-control select2" multiple="multiple" data-placeholder="Select Service Area">
                                 @foreach($serviceareas as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -129,7 +129,7 @@
                         {{-- Room Number --}}
                         <div class="col-md-3 mb-3">
                             <label for="roomNumber">Room Number</label>
-                            <select name="roomNumber[]" id="roomNumber" class="form-control select2" multiple="multiple" data-placeholder="Pilih Room Number">
+                            <select name="roomNumber[]" id="roomNumber" class="form-control select2" multiple="multiple" data-placeholder="Select Room Number">
                                 @foreach($rooms as $item)
                                     <option value="{{ $item->room_code }}">{{ $item->room_code }}</option>
                                 @endforeach
@@ -139,7 +139,7 @@
                         {{-- Room Name --}}
                         <div class="col-md-3 mb-3">
                             <label for="roomName">Room Name</label>
-                            <select name="roomName[]" id="roomName" class="form-control select2" multiple="multiple" data-placeholder="Pilih Room Name">
+                            <select name="roomName[]" id="roomName" class="form-control select2" multiple="multiple" data-placeholder="Select Room Name">
                                 @foreach($rooms as $item)
                                     <option value="{{ $item->room_name }}">{{ $item->room_name }}</option>
                                 @endforeach
@@ -149,7 +149,7 @@
                     <div class="row">
                         <div class="col-12 text-right">
                             <button type="submit" class="btn btn-primary" id="btnSave">
-                                <i class="fas fa-save mr-1"></i> Simpan
+                                <i class="fas fa-save mr-1"></i> Save
                             </button>
                             <button type="reset" class="btn btn-secondary ml-2" onclick="$('.select2').val(null).trigger('change');">
                                 <i class="fas fa-undo mr-1"></i> Reset
@@ -304,7 +304,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>Subject</label>
-                            <select name="subject[]" id="editSubject" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Subject">
+                            <select name="subject[]" id="editSubject" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Subject">
                                 @foreach($subjects as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -312,7 +312,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>System</label>
-                            <select name="system[]" id="editSystem" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih System">
+                            <select name="system[]" id="editSystem" class="form-control select2-edit" multiple="multiple" data-placeholder="Select System">
                                 @foreach($systems as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -320,7 +320,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Model</label>
-                            <select name="model[]" id="editModel" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Model">
+                            <select name="model[]" id="editModel" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Model">
                                 @foreach($models as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -328,7 +328,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Building</label>
-                            <select name="building[]" id="editBuilding" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Building">
+                            <select name="building[]" id="editBuilding" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Building">
                                 @foreach($buildings as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -336,7 +336,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Location</label>
-                            <select name="location[]" id="editLocation" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Location">
+                            <select name="location[]" id="editLocation" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Location">
                                 @foreach($locations as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -344,7 +344,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Service Area</label>
-                            <select name="servicearea[]" id="editServicearea" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Service Area">
+                            <select name="servicearea[]" id="editServicearea" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Service Area">
                                 @foreach($serviceareas as $item)
                                     <option value="{{ $item }}">{{ $item }}</option>
                                 @endforeach
@@ -352,7 +352,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Room Number</label>
-                            <select name="roomNumber[]" id="editRoomNumber" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Room Number">
+                            <select name="roomNumber[]" id="editRoomNumber" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Room Number">
                                 @foreach($rooms as $item)
                                     <option value="{{ $item->room_code }}">{{ $item->room_code }}</option>
                                 @endforeach
@@ -360,7 +360,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Room Name</label>
-                            <select name="roomName[]" id="editRoomName" class="form-control select2-edit" multiple="multiple" data-placeholder="Pilih Room Name">
+                            <select name="roomName[]" id="editRoomName" class="form-control select2-edit" multiple="multiple" data-placeholder="Select Room Name">
                                 @foreach($rooms as $item)
                                     <option value="{{ $item->room_name }}">{{ $item->room_name }}</option>
                                 @endforeach
