@@ -165,40 +165,55 @@ public function getRooms(Request $request)
 
         if (in_array($subMenu, ['equipment', 'computer'])) {
             if ($request->has('equipment_id') && !empty($request->equipment_id)) {
-                $existing = EquipmentQualification::where('equipment_id', $request->equipment_id)
-                    ->where('sub_menu', $subMenu)
-                    ->first();
+                $equipmentId = trim($request->equipment_id);
+                $isNa = in_array(strtoupper($equipmentId), ['na', 'NA', 'N/A', 'N / A', 'N.A.', '-']);
 
-                if ($existing) {
-                    return redirect()->back()
-                        ->withInput()
-                        ->with('error', 'Equipment dengan ID ini dan Category sudah ada!');
+                if (!$isNa) {
+                    $existing = EquipmentQualification::where('equipment_id', $equipmentId)
+                        ->where('sub_menu', $subMenu)
+                        ->first();
+
+                    if ($existing) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Equipment dengan ID ini dan Category sudah ada!');
+                    }
                 }
             }
         }
 
         if ($request->has('product_code') && !empty($request->product_code)) {
-            $productExist = EquipmentQualification::where('product_code', $request->product_code)
-                            ->where('sub_menu', $subMenu)
-                            ->first();
+            $productCode = trim($request->product_code);
+            $isProductNa = in_array(strtoupper($productCode), ['NA', 'N/A', 'N / A', 'N.A.', '-']);
 
-            if ($productExist) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Product dengan Kode ini dan Category sudah ada!');
-            }
-        }
-
-        if ($subMenu === 'room') {
-            if ($request->has('service_area') && !empty($request->service_area)) {
-                $productExist = EquipmentQualification::where('serviceArea', $request->service_area)
+            if (!$isProductNa) {
+                $productExist = EquipmentQualification::where('product_code', $productCode)
                                 ->where('sub_menu', $subMenu)
                                 ->first();
 
                 if ($productExist) {
                     return redirect()->back()
                         ->withInput()
-                        ->with('error', 'Service Area dan Category sudah ada!');
+                        ->with('error', 'Product dengan Kode ini dan Category sudah ada!');
+                }
+            }
+        }
+
+        if ($subMenu === 'room') {
+            if ($request->has('service_area') && !empty($request->service_area)) {
+                $serviceArea = trim($request->service_area);
+                $isServiceAreaNa = in_array(strtoupper($serviceArea), ['NA', 'N/A', 'N / A', 'N.A.', '-']);
+
+                if (!$isServiceAreaNa) {
+                    $productExist = EquipmentQualification::where('serviceArea', $serviceArea)
+                                    ->where('sub_menu', $subMenu)
+                                    ->first();
+
+                    if ($productExist) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Service Area dan Category sudah ada!');
+                    }
                 }
             }
         }
